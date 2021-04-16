@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
+import BarChart from '../components/BarChart';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +23,7 @@ export default function CenteredGrid() {
     <div className={classes.root}>
       <Grid container spacing={3}>
         <Grid item md={3} xs={12}>
-          <Paper className={classes.paper}>xs=12</Paper>
+          <BarChart/>
         </Grid>
         <Grid item md={3} xs={12}>
           <Paper className={classes.paper}>xs=6</Paper>

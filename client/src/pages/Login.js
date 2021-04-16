@@ -55,7 +55,6 @@ export default function Login() {
     error: null,
   });
   const [state, dispatch] = useContext(Context)
-  console.log(state)
 
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value })

@@ -71,11 +71,9 @@ function ResponsiveDrawer({ window, children }) {
   const [redirect, setRedirect] = useState(false)
   const [state, dispatch] = useContext(Context);
   const location = useLocation();
-  console.log('this is the state', state)
 
   useEffect(() => {
     cookieCheck().then((res) => {
-      console.log('this is the response', res)
       const user = res.data.user
       const payload = {
         isLoggedIn: true,
