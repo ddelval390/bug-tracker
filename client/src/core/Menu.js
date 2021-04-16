@@ -20,6 +20,7 @@ import Button from '@material-ui/core/Button';
 import { logOut, cookieCheck } from '../auth/auth-api';
 import { Context } from '../global/Store';
 import { Link, Redirect, useLocation } from 'react-router-dom';
+import ListSubheader from '@material-ui/core/ListSubheader';
 
 const drawerWidth = 240;
 
@@ -69,13 +70,18 @@ function ResponsiveDrawer({ window, children }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [redirect, setRedirect] = useState(false)
   const [state, dispatch] = useContext(Context);
-
   const location = useLocation();
-  console.log('this is the location', location.pathname)
+  console.log('this is the state', state)
 
   useEffect(() => {
-    cookieCheck().then(() => {
-      dispatch({ type: 'LOGIN', payload: true })
+    cookieCheck().then((res) => {
+      console.log('this is the response', res)
+      const user = res.data.user
+      const payload = {
+        isLoggedIn: true,
+        role: user.role
+      }
+      dispatch({ type: 'LOGIN', payload: payload })
     }).catch(e => null)
     // eslint-disable-next-line
   }, [])
@@ -104,27 +110,53 @@ function ResponsiveDrawer({ window, children }) {
     setMobileOpen(!mobileOpen);
   };
 
+  const drawerNavOptions = [['Home', ''], ['My Projects', 'projects'], ['My tickets', 'tickets'], ['My Profile', 'profile']]
+
   const drawer = (
     <div>
       <div className={classes.toolbar} />
       <Divider />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
+      <List
+        subheader={
+          <ListSubheader component="div">
+            Navigation
+          </ListSubheader>
+        }
+      >
+        {drawerNavOptions.map(([label, address], index) => (
+          <Link to={`/dashboard/${address}`} className={classes.link} key={label}>
+            <ListItem button >
+              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemText primary={label} />
+            </ListItem>
+          </Link>
         ))}
       </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+
+      {/* Shows admin options if the user is classified as an admin the DB */}
+      {
+        state.role === 'Admin' &&
+        <React.Fragment>
+          <Divider />
+          <List
+            subheader={
+              <ListSubheader component="div">
+                Admin Options
+        </ListSubheader>
+            }
+          >
+            {['Manage Role Assigments', 'Manage Users'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </React.Fragment>
+      }
+
+
+
     </div>
   );
 
@@ -221,67 +253,3 @@ ResponsiveDrawer.propTypes = {
 };
 
 export default ResponsiveDrawer;
-
-// root: {
-//   flexGrow: 1,
-// },
-// link: {
-//   color: 'white',
-//   textDecoration: 'none',
-// },
-// menuButton: {
-//   marginRight: theme.spacing(2),
-// },
-// title: {
-//   flexGrow: 1,
-// },
-
-
-// const [redirect, setRedirect] = useState(false)
-// const [state, dispatch] = useContext(Context);
-
-// useEffect(() => {
-//   cookieCheck().then(() => {
-//     dispatch({type: 'LOGIN', payload: true})  
-//   }).catch(e => null)
-//   // eslint-disable-next-line
-// },[])
-
-
-// const handleLogOut = () => {
-//   logOut()
-//   dispatch({type: 'LOGOUT', payload: false})
-//   setRedirect(!redirect)
-// }
-
-// const options = (
-//   state.isLoggedIn ?
-//     <React.Fragment>
-//       <Link to='/' className={classes.link}><Button color="inherit">Home</Button></Link>
-//       <Button color="inherit" onClick={handleLogOut}>Log Out</Button>
-//     </React.Fragment>
-//     :
-//     <React.Fragment>
-//       <Link to='/login' className={classes.link}><Button color="inherit">Log In</Button></Link>
-//       <Link to='/signup' className={classes.link}><Button color="inherit">Sign Up</Button></Link>
-//     </React.Fragment>
-// )
-
-// return (
-//   <div className={classes.root}>
-//     {redirect && <Redirect to='/' />}
-//     <AppBar position="static">
-//       <Toolbar>
-//         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-//           <MenuIcon />
-//         </IconButton>
-//         <Typography variant="h6" className={classes.title}>
-//           Autch
-//         </Typography>
-
-//         {options}
-
-//       </Toolbar>
-//     </AppBar>
-//   </div>
-// );

@@ -55,6 +55,7 @@ export default function Login() {
     error: null,
   });
   const [state, dispatch] = useContext(Context)
+  console.log(state)
 
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value })
@@ -71,10 +72,16 @@ export default function Login() {
         password: newValues.password,
         isSignUp: false,
       }
-      connUser(userData).then(() => {
-        dispatch({ type: 'LOGIN', payload: true })
+      connUser(userData).then((res) => {
+        const user = res.data.user
+        const payload = {
+          isLoggedIn: true,
+          role: user.role
+        }
+        dispatch({ type: 'LOGIN', payload: payload })
       })
         .catch(e => {
+          console.log(e)
           setValues({ ...values, error: 'Incorrect email or password' })
         })
     }

@@ -3,7 +3,7 @@ const Reducer = (state, action) => {
         case 'LOGIN':
             return {
                 ...state,
-                isLoggedIn: action.payload
+                ...action.payload
             };
         case 'LOGOUT':
             return {

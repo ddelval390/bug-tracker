@@ -26,6 +26,10 @@ const UserSchema = new mongoose.Schema({
         trim: true,
         required: 'Last Name is required'
     },
+    role: {
+        type: String,
+        default: 'Submitter',
+    },
     email: {
         type: String,
         trim: true,

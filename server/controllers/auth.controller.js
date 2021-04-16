@@ -12,7 +12,7 @@ const connectUser = (req, res, next) => {
             if (err) {
                 return res.status(400).json({ errors: err });
             }
-            return res.status(200).json({success: `logged in ${user.id}`})
+            return res.status(200).json({success: `logged in ${user.id}`, user: user})
         })
     })(req, res, next);
 }
@@ -24,7 +24,7 @@ const logOutUser = (req, res) => {
 
 const authenticationCheck = (req, res) =>{
     if (req.isAuthenticated()) {
-        return res.status(200).json({success: `user authenticated`})
+        return res.status(200).json({success: `user authenticated`, user: req.user})
     }
     return res.status(400).json({failed: 'user not authenticated'})
    

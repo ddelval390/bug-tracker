@@ -1,39 +1,43 @@
 import axios from "axios";
 
 const connUser = async (userData) => {
-    await axios.post("/auth/conn", userData)
+    const response = await axios.post("/auth/conn", userData)
     .then(res => {
-        console.log(res)
+        return res
     })
     .catch(err => {
         console.log(err.response)
         throw err;
     })
 
-
+    return response
 }
 
 const cookieCheck = async () => {
-    await axios.get("/auth/initauthcheck")
+    const response = await axios.get("/auth/initauthcheck")
     .then(res => {
-        console.log(res)
+        return res
     })
     .catch(err => {
         console.log("[verify call]")
         console.log(err.response)
         throw err
     });
+
+    return response
 }
 
 const logOut = () => {
-    axios.get("/auth/logout")
+    const response = axios.get("/auth/logout")
     .then(res => {
-        console.log(res);
+        return res;
     })
     .catch(err => {
         console.log(err);
         console.log(err.response);
     })
+
+    return response
 }
 
 export {connUser, cookieCheck, logOut}
