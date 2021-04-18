@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { connUser } from '../auth/auth-api'
+import { connUser } from '../apis/auth-api'
 import { Context } from '../global/Store';
 import { Redirect, Link } from 'react-router-dom';
 
@@ -75,7 +75,8 @@ export default function Login() {
         const user = res.data.user
         const payload = {
           isLoggedIn: true,
-          role: user.role
+          role: user.role,
+          userId: user._id
         }
         dispatch({ type: 'LOGIN', payload: payload })
       })

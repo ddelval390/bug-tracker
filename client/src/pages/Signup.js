@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Context } from '../global/Store';
-import { connUser } from '../auth/auth-api';
+import { connUser } from '../apis/auth-api';
 import {Redirect, Link} from 'react-router-dom';
 
 function Copyright() {

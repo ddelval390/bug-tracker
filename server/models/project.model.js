@@ -1,9 +1,13 @@
 import mongoose from 'mongoose'
 
 const ProjectSchema = new mongoose.Schema({
-    name: {
+    title: {
         type: String,
-        required: 'Project name is required'
+        required: 'Project title is required'
+    },
+    description: {
+        type: String,
+        required: 'Project description is required'
     },
     manager: {
         type: mongoose.Schema.Types.ObjectId,

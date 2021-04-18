@@ -1,6 +1,8 @@
 import express from 'express';
 import session from 'express-session';
-import auth from './routes/auth.route.js';
+import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/user.routes.js'
+import projectRoutes from './routes/project.routes.js'
 import passport from './passport/setup.js'
 
 
@@ -26,7 +28,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use('/', auth)
+app.use('/', projectRoutes)
+app.use('/', userRoutes)
+app.use('/', authRoutes)
 
 app.get('/',(req,res) => {
     res.send('Welcome to Node Babel')

@@ -5,6 +5,7 @@ import Reducer from './Reducer'
 const initialState = {
     isLoggedIn: false,
     role: null,
+    userId: null,
 };
 
 const Store = ({children}) => {

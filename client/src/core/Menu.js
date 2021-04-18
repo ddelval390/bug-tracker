@@ -17,7 +17,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import { logOut, cookieCheck } from '../auth/auth-api';
+import { logOut, cookieCheck } from '../apis/auth-api';
 import { Context } from '../global/Store';
 import { Link, Redirect, useLocation } from 'react-router-dom';
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -77,7 +77,8 @@ function ResponsiveDrawer({ window, children }) {
       const user = res.data.user
       const payload = {
         isLoggedIn: true,
-        role: user.role
+        role: user.role,
+        userId: user._id
       }
       dispatch({ type: 'LOGIN', payload: payload })
     }).catch(e => null)
