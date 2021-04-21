@@ -9,10 +9,6 @@ const ProjectSchema = new mongoose.Schema({
         type: String,
         required: 'Project description is required'
     },
-    manager: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
     team: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

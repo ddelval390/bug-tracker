@@ -19,9 +19,7 @@ const cookieCheck = async () => {
         return res
     })
     .catch(err => {
-        console.log("[verify call]")
-        console.log(err.response)
-        throw err
+        return err
     });
 
     return response

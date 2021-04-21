@@ -24,10 +24,23 @@ const getUserProjects = async (userId) => {
 
     return response
 }
+const getAllUsers = async () => {
+    const response = await axios.get(`/api/users`)
+    .then(res => {
+        return res
+    })
+    .catch(err => {
+        console.log(err.response)
+        throw err;
+    })
+
+    return response
+}
 
 
 
 export {
     getUsersByRole,
     getUserProjects,
+    getAllUsers,
 }

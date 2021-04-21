@@ -110,6 +110,7 @@ function ResponsiveDrawer({ window, children }) {
   };
 
   const drawerNavOptions = [['Home', ''], ['My Projects', 'projects'], ['My tickets', 'tickets'], ['My Profile', 'profile']]
+  const adminNavOptions = [['Manage User Roles','admin/user-roles'], ['Manage Project Teams', 'admin/teams']]
 
   const drawer = (
     <div>
@@ -134,7 +135,7 @@ function ResponsiveDrawer({ window, children }) {
 
       {/* Shows admin options if the user is classified as an admin the DB */}
       {
-        state.role === 'Admin' &&
+        state.role === 'Project Manager' &&
         <React.Fragment>
           <Divider />
           <List
@@ -144,12 +145,14 @@ function ResponsiveDrawer({ window, children }) {
         </ListSubheader>
             }
           >
-            {['Manage Role Assigments', 'Manage Users'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
+            {adminNavOptions.map(([label, address], index) => (
+          <Link to={`/dashboard/${address}`} className={classes.link} key={label}>
+            <ListItem button >
+              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemText primary={label} />
+            </ListItem>
+          </Link>
+        ))}
           </List>
         </React.Fragment>
       }

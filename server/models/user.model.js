@@ -47,4 +47,8 @@ const UserSchema = new mongoose.Schema({
         default: Date.now
     }
 })
+
+UserSchema.virtual('fullName').get(() => {
+    return `${this.first_name} ${this.last_name}`
+})
 export default mongoose.model("User", UserSchema);

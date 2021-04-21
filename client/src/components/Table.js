@@ -13,6 +13,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 const useStyles = makeStyles({
     table: {
         minWidth: 650,
+        
     },
     paper: {
         boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
@@ -22,7 +23,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function BasicTable({ selected, handleSelect, title,  rows}) {
+export default function BasicTable({ selected, handleSelect, title,  data, hover, dense}) {
     const classes = useStyles();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -38,23 +39,25 @@ export default function BasicTable({ selected, handleSelect, title,  rows}) {
 
     const isSelected = name => selected === name
 
+    const rows = JSON.parse(JSON.stringify(data))
+    rows.forEach(row => delete row._id)
     
     return (
         <Paper className={classes.paper}>
             <Typography variant='h4' component='span' className={classes.span}>
                 {title}
             </Typography>
-            <TableContainer>
-                <Table className={classes.table} aria-label="simple table">
+            <TableContainer style={{minHeight: '20vh', maxHeight: '20vh'}}>
+                <Table className={classes.table} aria-label="simple table" size={dense && 'small'} >
                     <TableHead>
                         <TableRow>
                             {   rows[0] &&
                                 Object.keys(rows[0]).map((key, index) => {
                                     const titleCaseKey = key.charAt(0).toUpperCase() + key.slice(1)
                                     if (index === 0) {
-                                        return <TableCell key={index}>{titleCaseKey}</TableCell>
+                                        return <TableCell key={key + ' ' + index}>{titleCaseKey}</TableCell>
                                     } else {
-                                        return <TableCell key={index} align="right">{titleCaseKey}</TableCell>
+                                        return <TableCell key={key + ' ' + index} align="right">{titleCaseKey}</TableCell>
                                     }
 
                                 })
@@ -63,23 +66,18 @@ export default function BasicTable({ selected, handleSelect, title,  rows}) {
                     </TableHead>
                     <TableBody>
                         {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                            <TableRow hover key={row.title} onClick={(event) => handleSelect(event, row.title)} selected={isSelected(row.title)}>
+                            <TableRow hover={hover} key={row.title} onClick={(event) => handleSelect(event, row.title)} selected={hover && isSelected(row.title)}>
                                 {
                                     Object.keys(row).map((key, index) => {
                                         if (index === 0) {
-                                            return <TableCell key={index} component="th" scope="row">
+                                            return <TableCell key={key + ' ' + index} component="th" scope="row">
                                                 {row[key]}
                                             </TableCell>
                                         } else {
-                                            return <TableCell key={index} align="right">{row[key]}</TableCell>
+                                            return <TableCell key={key + ' ' + index} align="center">{row[key]}</TableCell>
                                         }
                                     })
                                 }
-
-                                {/* <TableCell align="right">{row.calories}</TableCell>
-                                <TableCell align="right">{row.fat}</TableCell>
-                                <TableCell align="right">{row.carbs}</TableCell>
-                                <TableCell align="right">{row.protein}</TableCell> */}
                             </TableRow>
                         ))}
                     </TableBody>

@@ -13,6 +13,7 @@ const TicketSchema = new mongoose.Schema({
     },
     status: {
         type: String,
+        default: 'open'
     },
     priority: {
         type: String,
@@ -25,10 +26,23 @@ const TicketSchema = new mongoose.Schema({
         ref: 'User',
     },
     comments: [{
-        comment: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Comment',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+    }],
+    history: [{
+        property: {
+            type: String,
         },
+        oldValue: {
+            type: String,
+        },
+        newValue: {
+            type: String
+        },
+        dateChanged: {
+            type: Date,
+            default: Date.now
+        }
     }],
     submissionDate: {
         type: Date,

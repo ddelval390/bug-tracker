@@ -10,9 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles(theme => ({
     dialogPaper: {
-        minHeight: '80vh',
-        maxHeight: '80vh',
-        minWidth: '80vw',
+        minHeight: '40vh',
+        minWidth: '40vw',
     },
     input: {
         display: 'none',
@@ -47,7 +46,7 @@ const BugForm = ({children, isOpen, handleOpen, dialogTitle, dialogDescription, 
                         label="Title"
                         type="text"
                         value={titleTFValue}
-                        onChange={(e) => handleChange(e, 'title')}
+                        onChange={(e) => handleChange(e.target.value, 'title')}
                         fullWidth
                     />
                     <TextField
@@ -57,9 +56,9 @@ const BugForm = ({children, isOpen, handleOpen, dialogTitle, dialogDescription, 
                         type="text"
                         variant="filled"
                         multiline
-                        rows={20}
+                        rows={10}
                         value={descriptionTFValue}
-                        onChange={(e) => handleChange(e, 'description')}
+                        onChange={(e) => handleChange(e.target.value, 'description')}
                         fullWidth
                         
                     />
