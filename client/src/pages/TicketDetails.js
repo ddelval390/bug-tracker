@@ -431,7 +431,7 @@ const TicketDetails = ({ match }) => {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button variant="contained" color="secondary" fullWidth onClick={() => handleOpenConfirmation(handleDeleteTicket)}>
+              <Button variant="contained" color="secondary" fullWidth onClick={() => handleOpenConfirmation(() => handleDeleteTicket())}>
                 Delete
               </Button>
             </Grid>
