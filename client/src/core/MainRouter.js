@@ -13,7 +13,7 @@ const AdminTeams = lazy(() => import('../pages/AdminTeams'))
 const AdminRoles = lazy(() => import('../pages/AdminRoles'))
 const Profile = lazy(() => import('../pages/Profile'))
 const UserTickets = lazy(() => import('../pages/UserTickets'))
-
+const NotFound = lazy(() => import('../pages/NotFound'))
 
 const MainRouter = () => {
     return (
@@ -29,6 +29,7 @@ const MainRouter = () => {
                     <PrivateRoute exact path='/dashboard/projects/ticket/:ticketId' component={TicketDetails} />
                     <PrivateRoute exact path='/dashboard/admin/teams' component={AdminTeams} />
                     <PrivateRoute exact path='/dashboard/admin/user-roles' component={AdminRoles} />
+                    <Route component={NotFound} />
                 </Switch>
             </Suspense>
         </Menu>
