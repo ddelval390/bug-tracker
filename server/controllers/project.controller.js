@@ -47,7 +47,7 @@ const findProject = async (req, res, next) => {
         req.project = await Project.findOne({ _id: req.params.projectId }).exec()
         await req.project
             .populate('team', 'name email')
-            .populate('tickets', 'title description status type priority')
+            .populate('tickets', {_id:1, title:1, description:1, status:1, type:1, priority:1})
             .execPopulate()
         next()
     } catch (err) {
@@ -82,9 +82,9 @@ const createTicket = async (req, res) => {
 
         const filteredTicket ={
             _id: ticket._id,
-            status: ticket.status,
             title: ticket.title,
             description: ticket.description,
+            status: ticket.status,
             type: ticket.type,
             priority: ticket.priority,
         }
