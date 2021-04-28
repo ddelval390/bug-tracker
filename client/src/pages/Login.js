@@ -13,6 +13,7 @@ import Container from '@material-ui/core/Container';
 import { connUser } from '../apis/auth-api'
 import { Context } from '../global/Store';
 import { Redirect, Link } from 'react-router-dom';
+import {LOGIN} from '../helpers/constants';
 
 function Copyright() {
   return (
@@ -47,21 +48,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+const Login = () => {
   const classes = useStyles();
   const [values, setValues] = useState({
     email: '',
     password: '',
     error: null,
   });
-  const [state, dispatch] = useContext(Context)
+  const [store, dispatch] = useContext(Context)
 
+  /**
+   * Handles form input
+   * @param {string} name - Name of the property to be changed.
+   */
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value })
   };
 
-  const handleSubmit = event => {
-
+  /**
+   * Validates inputs and then submits user data to login.
+   */
+  const handleSubmit = () => {
     const newValues = { ...values }
     if (!newValues.password || !newValues.email) {
       setValues({ ...values, error: "Please fill in all fields" })
@@ -78,7 +85,7 @@ export default function Login() {
           role: user.role,
           userId: user._id
         }
-        dispatch({ type: 'LOGIN', payload: payload })
+        dispatch({ type: LOGIN, payload: payload })
       })
         .catch(e => {
           console.log(e)
@@ -91,7 +98,7 @@ export default function Login() {
 
   return (
     <Container component="main" maxWidth="xs">
-      {state.isLoggedIn && <Redirect to='/dashboard' />}
+      {store.isLoggedIn && <Redirect to='/dashboard' />}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -160,3 +167,5 @@ export default function Login() {
     </Container>
   );
 }
+
+export default Login

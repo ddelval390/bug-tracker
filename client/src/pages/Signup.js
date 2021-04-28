@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import { Context } from '../global/Store';
 import { connUser } from '../apis/auth-api';
 import {Redirect, Link} from 'react-router-dom';
+import {LOGIN} from '../helpers/constants';
 
 function Copyright() {
   return (
@@ -46,36 +47,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+const Signup = () => {
   const classes = useStyles();
   const [values, setValues] = useState({
     email: '',
     password: '',
-    firstName: '',
-    lastName: '',
+    name: '',
     error: null,
   });
-  const [state, dispatch] = useContext(Context)
+  const [store, dispatch] = useContext(Context)
 
+  /**
+   * Handles form input
+   * @param {string} name - Name of the property to be changed.
+   */
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value })
   };
 
-  const handleSubmit = event => {
-
+  /**
+   * Validates inputs and then submits user data to create an account.
+   */
+  const handleSubmit = () => {
     const newValues = { ...values }
-    if (!newValues.password || !newValues.email || !newValues.firstName || !newValues.lastName) {
+    if (!newValues.password || !newValues.email || !newValues.name) {
       setValues({ ...values, error: "Please fill in all fields" })
     } else {
       const userData = {
         email: newValues.email,
         password: newValues.password,
-        firstName: newValues.firstName,
-        lastName: newValues.lastName,
+        name: newValues.name,
         isSignUp: true,
       }
       connUser(userData).then(() => {
-        dispatch({ type: 'LOGIN', payload: true })
+        dispatch({ type: LOGIN, payload: true })
       })
         .catch(e => {
           setValues({ ...values, error: 'This email is already in use please login' })
@@ -86,7 +91,7 @@ export default function SignUp() {
 
   return (
     <Container component="main" maxWidth="xs">
-      {state.isLoggedIn && <Redirect to='/dashboard' />}
+      {store.isLoggedIn && <Redirect to='/dashboard' />}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -102,32 +107,17 @@ export default function SignUp() {
         }
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                error={!values.firstName && values.error}
-                value={values.firstName}
-                onChange={handleChange('firstName')}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                error={!values.lastName && values.error}
-                value={values.lastName}
-                onChange={handleChange('lastName')}
+                id="name"
+                label="Name"
+                name="name"
+                error={!values.name && values.error}
+                value={values.name}
+                onChange={handleChange('name')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -184,3 +174,5 @@ export default function SignUp() {
     </Container>
   );
 }
+
+export default Signup

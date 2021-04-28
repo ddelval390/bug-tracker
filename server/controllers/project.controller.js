@@ -1,14 +1,39 @@
 import Project from '../models/project.model.js';
 import Ticket from '../models/ticket.model.js'
 import Comment from '../models/comment.model.js'
+import io from '../socket.js'
+import { filter } from 'compression';
+
 
 const createProject = async (req, res) => {
     try {
+        console.log(req.body)
         const project = new Project(req.body)
         await project.save()
-        console.log('this is the project', project)
+
+        const filteredProject = {
+            _id: project._id,
+            title: project.title,
+            project: project.description,
+        }
+
         return res.status(200).json({
-            message: "Successfully created a new project!"
+            message: "Successfully created a new project!",
+            project: filteredProject,
+        })
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({
+            error: err
+        })
+    }
+}
+
+const deleteProject = async (req, res) => {
+    try {
+        await req.project.remove()
+        return res.status(200).json({
+            success: 'Successfully deleted this project'
         })
     } catch (err) {
         console.log(err)
@@ -20,10 +45,10 @@ const createProject = async (req, res) => {
 
 const findProject = async (req, res, next) => {
     try {
-        req.project = await Project.findOne({ title: req.params.title }).exec()
+        req.project = await Project.findOne({ _id: req.params.projectId }).exec()
         await req.project
-            .populate('team', { _id: 1, role: 1, first_name: 1, last_name: 1, email: 1 })
-            .populate('tickets', { _id: 1, title: 1, description: 1, status: 1, type: 1, priority: 1, submissionDate: 1 })
+            .populate('team', 'name email')
+            .populate('tickets', 'title description status type priority')
             .execPopulate()
         next()
     } catch (err) {
@@ -55,9 +80,34 @@ const createTicket = async (req, res) => {
         await ticket.save()
         await req.project.tickets.push(ticket)
         await req.project.save()
-        console.log('added ticket', req.project)
+
+        const filteredTicket ={
+            _id: ticket._id,
+            status: ticket.status,
+            title: ticket.title,
+            description: ticket.description,
+            type: ticket.type,
+            priority: ticket.priority,
+            submissionDate: ticket.submissionDate
+        }
+
+        io.getIO().to(req.project._id.toString()).emit('newTicket', filteredTicket)
         return res.status(200).json({
             message: "Successfully created ticket",
+        })
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({
+            error: err
+        })
+    }
+}
+
+const deleteTicket = async (req, res) => {
+    try {
+        await req.ticket.remove()
+        return res.status(200).json({
+            message: "Successfully deleted ticket",
         })
     } catch (err) {
         console.log(err)
@@ -71,7 +121,11 @@ const updateTeam = async (req, res) => {
     try {
         req.project.team = req.body
         await req.project.save()
-        console.log('Updated team', req.project)
+        await req.project
+            .populate('team')
+            .execPopulate()
+
+        io.getIO().to(req.project._id.toString()).emit('newTeam', req.project.team)
         return res.status(200).json({
             message: "Successfully updated the team",
         })
@@ -101,7 +155,8 @@ const returnTicket = async (req, res) => {
         await req.ticket
             .populate('submitter')
             .populate('comments')
-            .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 0, first_name: 1, last_name: 1 } } },)
+            .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 0, name: 1 } } },)
+            .populate('assignedDev')
             .execPopulate()
         return res.status(200).json({
             message: "Successfully found the ticket",
@@ -128,12 +183,16 @@ const updateTicket = async (req, res) => {
                 }
                 req.ticket.history.push({ ...history })
             }
-
             req.ticket[key] = value
-
-
         })
-        console.log(req.ticket)
+        await req.ticket
+            .populate('submitter')
+            .populate('comments')
+            .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 0, name: 1 } } },)
+            .populate('assignedDev')
+            .execPopulate()
+        const ticketId = req.ticket._id.toString()
+        io.getIO().to(ticketId).emit('ticketUpdate', req.ticket)
         await req.ticket.save()
         return res.status(200).json({
             message: "Successfully updated the ticket",
@@ -146,12 +205,34 @@ const updateTicket = async (req, res) => {
     }
 }
 
+const findComment = async (req, res, next) => {
+    try {
+        const comment = await Comment.findOne({ _id: req.params.commentId })
+        req.comment = comment
+        next()
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({
+            error: err
+        })
+    }
+}
+
 const postComment = async (req, res) => {
     try {
         const comment = new Comment(req.body)
         await comment.save()
-        req.ticket.comments.push(comment)
+        req.ticket.comments.unshift(comment)
         await req.ticket.save()
+        const ticketId = req.ticket._id.toString()
+        await req.ticket
+            .populate('submitter')
+            .populate('comments')
+            .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 1, name: 1 } } },)
+            .populate('assignedDev')
+            .execPopulate()
+        const opC = req.ticket.comments.pop()
+        io.getIO().to(ticketId).emit('newComment', opC)
         return res.status(200).json({
             message: "Successfully posted comment"
         })
@@ -163,14 +244,33 @@ const postComment = async (req, res) => {
     }
 }
 
+const deleteComment = async (req, res) => {
+    try {
+        req.comment.remove()
+        io.getIO().to(ticketId).emit('newTicketUpdate')
+        return res.status(200).json({
+            success: 'Successfully deleted comment'
+        })
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({
+            error: err
+        })
+    }
+}
+
 export default {
     createProject,
+    deleteProject,
     findProject,
     returnProject,
     createTicket,
+    deleteTicket,
     findTicket,
     returnTicket,
     updateTicket,
+    findComment,
     postComment,
+    deleteComment,
     updateTeam,
 }

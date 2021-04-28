@@ -16,15 +16,10 @@ const ThirdPartyProviderSchema = new mongoose.Schema({
 })
 
 const UserSchema = new mongoose.Schema({
-    first_name: {
+    name: {
         type: String,
         trim: true,
         required: 'First Name is required'
-    },
-    last_name: {
-        type: String,
-        trim: true,
-        required: 'Last Name is required'
     },
     role: {
         type: String,
@@ -48,7 +43,4 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-UserSchema.virtual('fullName').get(() => {
-    return `${this.first_name} ${this.last_name}`
-})
 export default mongoose.model("User", UserSchema);

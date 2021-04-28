@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -21,6 +18,15 @@ import { logOut, cookieCheck } from '../apis/auth-api';
 import { Context } from '../global/Store';
 import { Link, Redirect, useLocation } from 'react-router-dom';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import SnackBar from '../components/Snackbar'
+import HomeIcon from '@material-ui/icons/Home';
+import BugReportIcon from '@material-ui/icons/BugReport';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import PeopleIcon from '@material-ui/icons/People';
+import {CLOSESNACKBAR, LOGIN, LOGOUT} from '../helpers/constants';
+
 
 const drawerWidth = 240;
 
@@ -62,16 +68,28 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  landingPage: {
+    flexGrow: 1,
+  },
 }));
 
-function ResponsiveDrawer({ window, children }) {
+const Menu = ({ window, children }) => {
+
+  /**
+   * Styling
+   */
   const classes = useStyles();
   const theme = useTheme();
+
+
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [redirect, setRedirect] = useState(false)
-  const [state, dispatch] = useContext(Context);
-  const location = useLocation();
+  const [store, dispatch] = useContext(Context);
 
+  const location = useLocation();
+  /**
+   * Handles initial check to see if the user has a cookie
+   */
   useEffect(() => {
     cookieCheck().then((res) => {
       const user = res.data.user
@@ -80,37 +98,45 @@ function ResponsiveDrawer({ window, children }) {
         role: user.role,
         userId: user._id
       }
-      dispatch({ type: 'LOGIN', payload: payload })
+      dispatch({ type: LOGIN, payload: payload })
     }).catch(e => null)
     // eslint-disable-next-line
   }, [])
 
 
+  /**
+   * Handles the logout function and redirects user to the landing page
+   */
   const handleLogOut = () => {
     logOut()
-    dispatch({ type: 'LOGOUT', payload: false })
+    dispatch({ type: LOGOUT})
     setRedirect(!redirect)
   }
 
+  /**
+   * Displays the log in and sign up button in the navbar
+   * if the user is not logged in
+   */
   const options = (
-    state.isLoggedIn ?
-      <React.Fragment>
-        <Button color="inherit" onClick={handleLogOut}>Log Out</Button>
-      </React.Fragment>
-      :
-      <React.Fragment>
-        <Link to='/login' className={classes.link}><Button color="inherit">Log In</Button></Link>
-        <Link to='/signup' className={classes.link}><Button color="inherit">Sign Up</Button></Link>
-      </React.Fragment>
+    !store.isLoggedIn &&
+    <React.Fragment>
+      <Link to='/login' className={classes.link}><Button color="inherit">Log In</Button></Link>
+      <Link to='/signup' className={classes.link}><Button color="inherit">Sign Up</Button></Link>
+    </React.Fragment>
   )
 
-
+  /**
+   * Opens the drawer
+   */
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawerNavOptions = [['Home', ''], ['My Projects', 'projects'], ['My tickets', 'tickets'], ['My Profile', 'profile']]
-  const adminNavOptions = [['Manage User Roles','admin/user-roles'], ['Manage Project Teams', 'admin/teams']]
+  /**
+   * Navigation options displayed in the drawer when a user is signed in
+   */
+  const drawerNavOptions = [['Home', '', HomeIcon], ['My tickets', 'tickets', BugReportIcon], ['My Profile', `profile/${store.userId}`, AccountBoxIcon]]
+  const adminNavOptions = [['Manage User Roles', 'admin/user-roles', AssignmentIndIcon], ['Manage Project Teams', 'admin/teams', PeopleIcon]]
 
   const drawer = (
     <div>
@@ -123,19 +149,27 @@ function ResponsiveDrawer({ window, children }) {
           </ListSubheader>
         }
       >
-        {drawerNavOptions.map(([label, address], index) => (
-          <Link to={`/dashboard/${address}`} className={classes.link} key={label}>
-            <ListItem button >
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={label} />
-            </ListItem>
-          </Link>
-        ))}
+        {/* Map navigation options to the drawer */}
+        {
+          drawerNavOptions.map(([label, address, Icon], index) => (
+            <Link to={`/dashboard/${address}`} className={classes.link} key={label}>
+              <ListItem button >
+                <ListItemIcon><Icon /></ListItemIcon>
+                <ListItemText primary={label} />
+              </ListItem>
+            </Link>
+          ))
+        }
+
+        <ListItem button onClick={handleLogOut}>
+          <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+          <ListItemText primary='LogOut' />
+        </ListItem>
       </List>
 
       {/* Shows admin options if the user is classified as an admin the DB */}
       {
-        state.role === 'Project Manager' &&
+        store.role === 'Admin' &&
         <React.Fragment>
           <Divider />
           <List
@@ -145,26 +179,30 @@ function ResponsiveDrawer({ window, children }) {
         </ListSubheader>
             }
           >
-            {adminNavOptions.map(([label, address], index) => (
-          <Link to={`/dashboard/${address}`} className={classes.link} key={label}>
-            <ListItem button >
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={label} />
-            </ListItem>
-          </Link>
-        ))}
+            {
+              adminNavOptions.map(([label, address, Icon], index) => (
+                <Link to={`/dashboard/${address}`} className={classes.link} key={label}>
+                  <ListItem button >
+                    <ListItemIcon><Icon /></ListItemIcon>
+                    <ListItemText primary={label} />
+                  </ListItem>
+                </Link>
+              ))
+            }
           </List>
         </React.Fragment>
       }
-
-
-
     </div>
   );
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
-  return (location.pathname.includes('/dashboard') ?
+  return (
+    /**
+     * If the route contains '/dashboard' the drawer will be rendered.
+     * Otherwise, the basic nav bar will be rendered.
+     */
+    location.pathname.includes('/dashboard') ?
     (<div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
@@ -218,6 +256,13 @@ function ResponsiveDrawer({ window, children }) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         {children}
+
+        <SnackBar
+          open={store.snackbarIsOpen}
+          handleClose={() => dispatch({ type: CLOSESNACKBAR })}
+          severity={store.snackbarSeverity}
+          text={store.snackbarText}
+        />
       </main>
     </div>)
     : (
@@ -236,7 +281,7 @@ function ResponsiveDrawer({ window, children }) {
 
           </Toolbar>
         </AppBar>
-        <main className={classes.content}>
+        <main className={!location.pathname === '/' ? classes.content : classes.landingPage}>
           <div className={classes.toolbar} />
           {children}
         </main>
@@ -246,12 +291,4 @@ function ResponsiveDrawer({ window, children }) {
   );
 }
 
-ResponsiveDrawer.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
-};
-
-export default ResponsiveDrawer;
+export default Menu;

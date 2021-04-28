@@ -3,6 +3,7 @@ import User from '../models/user.model.js'
 import passport from 'passport'
 import passportLocal from 'passport-local'
 
+
 const LocalStrategy = passportLocal.Strategy
 
 
@@ -48,17 +49,18 @@ passport.use(
                     return done(null, false, { message: "This user already exist" });
                 }
                 
-                let firstName = req.body.firstName
-                let lastName = req.body.lastName
-                const newUser = new User({ first_name: firstName, last_name: lastName, email: email, password: password })
+                let name = req.body.name
+                
+                const newUser = new User({ name: name, email: email, password: password })
     
                 // Hash password
+
+                
                 bcrypt.genSalt(12, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) throw err;
                         newUser.password = hash;
-                        newUser
-                            .save()
+                        newUser.save()
                             .then(user => {
                                 return done(null, user);
                             })

@@ -3,13 +3,27 @@ const Reducer = (state, action) => {
         case 'LOGIN':
             return {
                 ...state,
-                ...action.payload
+                ...action.payload,
+                isLoggedIn: true
             };
         case 'LOGOUT':
             return {
                 ...state,
-                isLoggedIn: action.payload
+                role: '',
+                userId: '',
+                isLoggedIn: false
             };
+        case 'OPENSNACKBAR':
+            return {
+                ...state,
+                ...action.snackbarPayload,
+                snackbarIsOpen: true,
+            };
+        case 'CLOSESNACKBAR':
+            return {
+                ...state,
+                snackbarIsOpen: false,
+            }
         default:
             return state;
     }

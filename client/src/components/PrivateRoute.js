@@ -2,16 +2,17 @@ import React, {useContext } from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { Context } from '../global/Store'
 
+
 const PrivateRoute = ({ component: Component, ...rest }) => {
-    const [state] = useContext(Context)
+    const [store] = useContext(Context)
     return (
   <Route {...rest} render={props => (
-    state.isLoggedIn ? (
+    store.isLoggedIn ? (
       <Component {...props}/>
     ) : (
       <Redirect to={{
         pathname: '/login',
-        state: { from: props.location }
+        store: { from: props.location }
       }}/>
     )
   )}/>

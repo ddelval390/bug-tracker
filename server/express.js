@@ -4,15 +4,17 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js'
 import projectRoutes from './routes/project.routes.js'
 import passport from './passport/setup.js'
-
+import helmet from 'helmet'
+import cors from 'cors'
+import compress from 'compression'
 
 const app = express();
 
-// Bodyparser 
+
+app.use(compress())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
-// Express Session
 let hour = 3600000
 app.use(
     session({
@@ -22,6 +24,9 @@ app.use(
         cookie: {maxAge: hour}
     })
 )
+
+app.use(cors())
+app.use(helmet())
 
 // Passport middleware
 app.use(passport.initialize());

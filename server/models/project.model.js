@@ -19,6 +19,20 @@ const ProjectSchema = new mongoose.Schema({
     }]
 })
 
+ProjectSchema.pre('remove', async function (next) {
+ 
+    if (this.tickets) {
+        this.tickets.map((ticket) => {
+            ticket.remove()
+        })
+    }
 
+    if (this.comments) {
+        this.comments.map((comment) => {
+            comment.remove()
+        })
+    }
+    next();
+});
 
 export default mongoose.model('Project', ProjectSchema)

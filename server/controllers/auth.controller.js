@@ -1,5 +1,9 @@
 import passport from 'passport'
 
+/**
+ * This middleware validates a user that is logging in,
+ * and it creates a new user for users that are signing up.
+ */
 const connectUser = (req, res, next) => {
     passport.authenticate("local", ( err, user, info) => {
         if (err) {
@@ -16,6 +20,7 @@ const connectUser = (req, res, next) => {
         })
     })(req, res, next);
 }
+
 
 const logOutUser = (req, res) => {
     req.logout()

@@ -15,8 +15,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
-
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Typography } from '@material-ui/core';
+import {OPENSNACKBAR, snackbarPayload} from '../helpers/constants'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,13 +34,6 @@ const useStyles = makeStyles((theme) => ({
         color: 'inherit',
         textDecoration: 'none',
     },
-    span: {
-        borderRadius: '3px',
-        backgroundColor: '#00adb5',
-        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
-        padding: '.4rem',
-
-    },
     formControl: {
         display: 'inline-block',
         margin: theme.spacing(1),
@@ -50,12 +44,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function CenteredGrid() {
+const AdminTeams = () => {
     const classes = useStyles();
 
-    const [selected, setSelected] = useState('');
+    const [selectedProjectId, setSelectedProjectId] = useState('');
     const [projectData, setProjectData] = useState([])
-    const [state] = useContext(Context);
+    const [store, dispatch] = useContext(Context);
 
 
     const [team, setTeam] = useState([])
@@ -63,41 +57,72 @@ export default function CenteredGrid() {
     const [selectedNewMembers, setSelectedNewMembers] = useState([])
     const [allUsers, setAllUsers] = useState([])
     const [makeUpdate, setMakeUpdate] = useState(false)
+    const [loadingProjects, setLoadingProjects] = useState(false)
+    const [loadingTeam, setLoadingTeam] = useState(false)
 
+ 
+    /**
+     * Loads all projects and loads all users.
+     */
     useEffect(() => {
+        setLoadingProjects(true)
         const func = async () => {
-            const projects = await getUserProjects(state.userId)
+            const projects = await getUserProjects(store.userId)
                 .then(res => res.data.projects)
             const users = await getAllUsers()
                 .then(res => res.data.userList)
-
+            console.log(users)
             setProjectData(projects)
             setAllUsers(users)
+            setLoadingProjects(false)
+
         }
 
         func()
         // eslint-disable-next-line
     }, [])
 
+    /**
+     * When a new project is selected, load the project and set the team.
+     */
     useEffect(() => {
-        if (selected !== '') {
-            getProject(selected)
+        if (selectedProjectId) {
+            setLoadingTeam(true)
+            setTeam([])
+            getProject(selectedProjectId)
                 .then(res => {
+                    setLoadingTeam(false)
                     const project = res.data.project
                     setTeam(project.team)
                 })
                 .catch(err => console.log(err))
         }
-    }, [selected])
+    }, [selectedProjectId])
 
+    /**
+     * When a the addmembers or remove members button is clicked,
+     * send an api request to update the selected project's team.
+     */
     useEffect(() => {
         if (makeUpdate) {
             const newTeam = []
             for (let member of team) {
                 newTeam.push(member._id)
             }
-            updateTeam(selected, newTeam)
-                .then(res => console.log(res))
+            updateTeam(selectedProjectId, newTeam)
+                .then(res => {
+                    console.log(res)
+                    snackbarPayload.snackbarText = 'Successfully updated the team'
+                    snackbarPayload.snackbarSeverity = 'success'
+                })
+                .catch(err => {
+                    console.log(err)
+                    snackbarPayload.snackbarText = 'Could not update the team. Try again later.'
+                    snackbarPayload.snackbarSeverity = 'error'
+                })
+                .finally(() => {
+                    dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+                  })
             setMakeUpdate(false)
 
         }
@@ -106,16 +131,24 @@ export default function CenteredGrid() {
     }, [makeUpdate])
 
 
-
-    const handleSelect = (event, name) => {
-        if (selected === name) {
-            setSelected('');
+    /**
+     * Handles the selection of a project on the table.
+     * @param {object} event - Capture the event.
+     * @param {string} id - The id of the newly selected project.
+     */
+    const handleSelectProject = (event, id) => {
+        if (selectedProjectId === id) {
+            setSelectedProjectId('');
         } else {
-            setSelected(name)
+            setSelectedProjectId(id)
         }
     }
 
 
+   /**
+    * Adds a user to a temporary list to set the checkbox as selected.
+    * @param {object} member - Object containing values from the member selected
+    */
     const handleSelectTeamMember = (member) => () => {
         const currentIndex = tempSelected.findIndex(i => i.email === member.email);
         const newChecked = [...tempSelected];
@@ -129,6 +162,9 @@ export default function CenteredGrid() {
         setTempSelected([...newChecked]);
     };
 
+    /**
+     * Removes the users that are checked and triggers an api request.
+     */
     const handleRemoveMembers = () => {
         const selectedTeamMembers = [...tempSelected]
         const newTeam = [...team]
@@ -142,6 +178,10 @@ export default function CenteredGrid() {
         setMakeUpdate(true)
     }
 
+    /**
+     * Adds the users that were selected in the autocomplete textbox
+     * to the team and triggers an api request to update the team.
+     */
     const handleAddMembers = () => {
         const newTeam = [...team, ...selectedNewMembers]
         setTeam([...newTeam])
@@ -149,9 +189,14 @@ export default function CenteredGrid() {
         setMakeUpdate(true)
     }
 
+    /**
+     * Sets the users selected in the autocomplete textbox into an array.
+     * @param {array} newMembers - Array of the users selected in the autocomplete textbox
+     */
     const handleSelectNewMembers = (newMembers) => {
         setSelectedNewMembers([...newMembers])
     }
+
 
     return (
         <div className={classes.root}>
@@ -162,17 +207,22 @@ export default function CenteredGrid() {
 
                 <Grid item md={8} xs={12}>
                     <Table
-                        selected={selected}
-                        handleSelect={handleSelect}
+                        emptyTableText='There are no projects to display'
+                        tableHeight='70vh'
+                        loading={loadingProjects}
+                        selected={selectedProjectId}
+                        handleSelect={handleSelectProject}
                         title='Projects'
                         data={projectData}
                         hover={true}
                         dense={false}
+                        rowKey='title'
                     />
                 </Grid>
                 <Grid item md={4} xs={12}>
                     <Box component={Paper}>
                         <Autocomplete
+                            disabled={!selectedProjectId}
                             multiple
                             limitTags={2}
                             disableListWrap
@@ -180,8 +230,7 @@ export default function CenteredGrid() {
                             id="tags-outlined"
                             options={allUsers}
                             getOptionLabel={(option) => {
-
-                                return <Fragment>{`${option.first_name} ${option.last_name}`}&nbsp;&nbsp;&nbsp;<em>{option.email}</em></Fragment>
+                                return <Fragment>{option.name}&nbsp;&nbsp;&nbsp;<em>{option.email}</em></Fragment>
                             }}
                             filterOptions={(options, state) => {
                                 const newOptions = options.filter((option) => team.findIndex((currMember) => option.email === currMember.email) === -1)
@@ -200,25 +249,38 @@ export default function CenteredGrid() {
                                 />
                             )}
                         />
-                        <List width={1} className={classes.root} style={{ minHeight: '20vh' }}>
+                        <List width={1} className={classes.root} style={{ minHeight: '30vh' }}>
                             {
-                                team.map((member) => {
-                                    const labelId = `checkbox-list-secondary-label-${member.first_name}`;
-                                    return (
-                                        <ListItem
-                                            key={member.email}
-                                            button
-                                            onClick={handleSelectTeamMember(member)}
-                                        >
-                                            <ListItemText id={labelId} primary={`${member.first_name}`} secondary={`${member.email}`} />
-                                            <Checkbox
-                                                edge="start"
-                                                checked={tempSelected.findIndex(i => i.email === member.email) !== -1}
-                                                inputProps={{ 'aria-labelledby': labelId }}
-                                            />
-                                        </ListItem>
-                                    );
-                                })
+                                loadingTeam &&
+                                <ListItem style={{ paddingLeft: '8rem' }}>
+                                    <CircularProgress size='10rem' />
+                                </ListItem>
+                            }
+                            {
+                                team.length ?
+                                    team.map((member) => {
+                                        const labelId = `checkbox-list-secondary-label-${member.name}`;
+                                        return (
+                                            <ListItem
+                                                key={member.email}
+                                                button
+                                                onClick={handleSelectTeamMember(member)}
+                                            >
+                                                <ListItemText id={labelId} primary={`${member.name}`} secondary={`${member.email}`} />
+                                                <Checkbox
+                                                    edge="start"
+                                                    checked={tempSelected.findIndex(i => i.email === member.email) !== -1}
+                                                />
+                                            </ListItem>
+                                        );
+                                    })
+                                    :
+                                    <ListItem>
+                                        <Typography variant='h4' className={classes.span}>
+                                            {(!loadingTeam && selectedProjectId) && 'This team is empty'}
+                                            {(!loadingTeam && !selectedProjectId) && 'Select a project'}
+                                        </Typography>
+                                    </ListItem>
                             }
                         </List>
                         <Button onClick={handleRemoveMembers} color="primary">
@@ -233,3 +295,5 @@ export default function CenteredGrid() {
         </div>
     );
 }
+
+export default AdminTeams

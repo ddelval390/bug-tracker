@@ -17,9 +17,11 @@ const TicketSchema = new mongoose.Schema({
     },
     priority: {
         type: String,
+        default: 'none',
     },
     type: {
         type: String,
+        default: 'bug',
     },
     assignedDev: {
         type: mongoose.Schema.Types.ObjectId,
@@ -48,10 +50,6 @@ const TicketSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    lastUpdate: {
-        type: Date
-    },
-
 })
 
 

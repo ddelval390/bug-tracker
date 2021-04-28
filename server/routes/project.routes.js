@@ -6,25 +6,28 @@ const router = express.Router();
 router.route('/api/projects/')
     .post(projectCtrl.createProject)
 
-router.route('/api/projects/:title')
+router.route('/api/projects/:projectId')
     .get(projectCtrl.returnProject)
-    .put()
-    .delete()
+    .delete(projectCtrl.deleteProject)
 
-router.route('/api/projects/:title/team')
+router.route('/api/projects/:projectId/team')
     .post(projectCtrl.updateTeam)
 
-router.route('/api/projects/:title/tickets', 'first_name last_name email')
+router.route('/api/projects/:projectId/tickets')
     .post(projectCtrl.createTicket)
 
 router.route('/api/projects/ticket/:ticketId')
     .get(projectCtrl.returnTicket)
     .patch(projectCtrl.updateTicket)
+    .delete(projectCtrl.deleteTicket)
 
 router.route('/api/projects/ticket/:ticketId/comments')
     .post(projectCtrl.postComment)
 
+router.route('/api/projects/ticket/comments/:commentId')
+    .delete(projectCtrl.deleteComment)
 
+router.param('commentId', projectCtrl.findComment)
 router.param('ticketId', projectCtrl.findTicket)
-router.param('title', projectCtrl.findProject)
+router.param('projectId', projectCtrl.findProject)
 export default router

@@ -7,19 +7,19 @@ import theme from './theme'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
 
-
-
 function App() {
 
   return (
-    <Store>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <MainRouter />
-        </ThemeProvider>
-      </BrowserRouter>
-    </Store>
+    
+      <Store>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <MainRouter />
+          </ThemeProvider>
+        </BrowserRouter>
+      </Store>
+    
   );
 }
 

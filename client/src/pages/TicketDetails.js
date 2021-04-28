@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { TextField, Typography } from '@material-ui/core';
 import HeaderLabel from '../components/HeaderLabel';
-import { getTicket, postComment, updateTicket } from '../apis/project-api';
+import { getTicket, postComment, deleteComment, updateTicket, deleteTicket } from '../apis/project-api';
 import { getUsersByRole } from '../apis/user-api';
 import Table from '../components/Table'
 import Button from '@material-ui/core/Button';
@@ -12,12 +12,16 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Context } from '../global/Store';
+import { Context, SocketContext } from '../global/Store';
 import DialogForm from '../components/DialogForm';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Redirect } from 'react-router-dom';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ConfirmationDialog from '../components/ConfirmationDialog';
+import { OPENSNACKBAR, snackbarPayload } from '../helpers/constants'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
+    boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
   },
   inline: {
     display: 'block',
@@ -34,105 +38,276 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-export default function CenteredGrid({ match }) {
+const TicketDetails = ({ match }) => {
   const classes = useStyles();
 
-  const initialForm = {
+  const [store, dispatch] = useContext(Context)
+  const socket = useContext(SocketContext)
+
+  const [redirect, setRedirect] = useState(false)
+
+  const [isLoading, setLoading] = useState({
+    comments: false,
+    history: false,
+    details: false,
+  })
+  const [form, setForm] = useState({
     title: '',
     description: '',
     priority: '',
     type: '',
-    status:'',
+    status: '',
+    isOpen: false,
+    error: '',
 
-  }
-  const [state] = useContext(Context)
+  })
+  const [newCommentText, setNewCommentText] = useState([])
 
   const [details, setDetails] = useState([])
   const [history, setHistory] = useState([])
   const [comments, setComments] = useState([])
-  const [commentText, setCommentText] = useState([])
 
-  const [isFormOpen, setFormOpen] = useState(false)
-  const [form, setForm] = useState(initialForm)
   const [devList, setDevList] = useState([])
   const devSelection = useRef()
 
+  const [isConfOpen, setConfOpen] = useState(false)
+  const [confAction, setConfAction] = useState(() => undefined)
 
+
+  /**
+   * Retrieves ticket data.
+   */
   useEffect(() => {
+    setLoading({
+      comments: true,
+      history: true,
+      details: true,
+    })
     getTicket(match.params.ticketId)
       .then(res => {
-        const fullName = `${res.data.ticket.submitter.first_name} ${res.data.ticket.submitter.last_name}`
+        const submitterFullName = res.data.ticket.submitter.name
+        const devFullName = res.data.ticket.assignedDev ? res.data.ticket.assignedDev.name : ''
+        devSelection.current = res.data.ticket.assignedDev
+        const localDate = new Date(res.data.ticket.submissionDate)
         setComments(res.data.ticket.comments)
         setHistory(res.data.ticket.history)
         setDetails({
           title: res.data.ticket.title,
           description: res.data.ticket.description,
           status: res.data.ticket.status,
-          'assigned dev': res.data.ticket.assignedDev,
+          'assigned dev': devFullName,
           priority: res.data.ticket.priority,
           type: res.data.ticket.type,
-          submitter: fullName,
-          'submission date': res.data.ticket.submissionDate,
+          submitter: submitterFullName,
+          'submission date': localDate.toLocaleDateString() + ' ' + localDate.toLocaleTimeString(),
+        })
+        setLoading({
+          comments: false,
+          history: false,
+          details: false,
         })
       })
-      // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [])
 
+  /**
+   * Gets a list of developers every time the dialog form is opened'
+   */
   useEffect(() => {
-    if (!isFormOpen) {
+    if (!form.isOpen) {
       setDevList([])
     } else {
       getUsersByRole('Developer')
         .then(res => setDevList([...res.data.userList]))
     }
-  }, [isFormOpen])
+  }, [form.isOpen])
 
+  /**
+   * Subscribes the socket to new ticket updates
+   */
+  useEffect(() => {
+    socket.emit('ticket updates', match.params.ticketId)
+    return function cleanup() {
+      socket.emit('disconnect ticket updates', match.params.ticketId)
+    }
+  }, [socket, match.params.ticketId])
+
+  /**
+   * Upon recieving a new comment, it is appended to the current comments.
+   * Upon recieving any other updates, the ticket details and history are replaced.
+   */
+  useEffect(() => {
+    socket.on('newComment', comment => {
+      setComments(prevComments => { prevComments.unshift(comment); return prevComments })
+    })
+    socket.on('ticketUpdate', ticket => {
+      setHistory(ticket.history)
+      setDetails({
+        title: ticket.title,
+        description: ticket.description,
+        status: ticket.status,
+        'assigned dev': ticket.assignedDev ? ticket.assignedDev.name : '',
+        priority: ticket.priority,
+        type: ticket.type,
+        submitter: ticket.submitter.name,
+        'submission date': ticket.submissionDate,
+      })
+    })
+    return function cleanup() {
+      socket.off('newComment')
+      socket.off('ticketUpdate')
+    }
+    // eslint-disable-next-line
+  }, [])
+
+  /**
+   * Handles user input in the comment box.
+   * @param {string} value - New comment value
+   */
   const handleCommentText = value => {
-    setCommentText(value)
+    setNewCommentText(value)
   }
 
-
+  /**
+   * Opens the dialog form and sets the textfields to the ticket specs.
+   */
   const handleOpen = () => {
     console.log(details)
-    setFormOpen(prevState => !prevState)
-    setForm({
+    setForm(prevForm => ({
       title: details.title,
       description: details.description,
       priority: details.priority,
       type: details.type,
       status: details.status,
-    })
+      isOpen: !prevForm.isOpen
+    }))
   }
 
-  const handleChange = (value, name) => {
+  /**
+   * Handles user input in the form.
+   * @param {string} value - The new value.
+   * @param {string} name - name of the property to be updated in the form.
+   */
+  const handleFormChange = (value, name) => {
     setForm(prevState => ({ ...prevState, [name]: value }))
   }
 
+  /**
+   * Creates a comment object and submits it to the server.
+   */
   const handlePostComment = () => {
     const comment = {
-      user: state.userId,
-      text: commentText,
+      user: store.userId,
+      text: newCommentText,
     }
 
     postComment(match.params.ticketId, comment)
-      .then(res => console.log(res))
+      .then(res => {
+        console.log(res)
+        snackbarPayload.snackbarText = 'Successfully posted comment'
+        snackbarPayload.snackbarSeverity = 'success'
+      })
+      .catch(err => {
+        console.log(err)
+        snackbarPayload.snackbarText = 'Could not post comment. Try again later.'
+        snackbarPayload.snackbarSeverity = 'error'
+      })
+      .finally(() => {
+        dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+      })
   }
 
-  const handleSubmit = () => {
+  /**
+   * Handles the deletion of a comment.
+   * @param {string} commentId - The "_id" field of the comment to be deleted.
+   */
+  const handleDeleteComment = (commentId) => {
+    deleteComment(commentId)
+      .then(res => {
+        console.log(res)
+        snackbarPayload.snackbarText = 'Successfully deleted comment'
+        snackbarPayload.snackbarSeverity = 'success'
+      })
+      .catch(res => {
+        console.log(res)
+        snackbarPayload.snackbarText = 'Could not delete comment. Try again later.'
+        snackbarPayload.snackbarSeverity = 'error'
+      })
+      .finally(() => {
+        dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+      })
+  }
+
+  /**
+   * Handles the submission of a ticket update in the dialog form.
+   */
+  const handleSubmitTicketUpdate = () => {
+    if (!form.title || !form.description) {
+      setForm(prevForm => ({ ...prevForm, error: 'Please fill in the required forms' }))
+    }
     const ticket = {
       title: form.title,
       description: form.description,
+      status: form.status,
       priority: form.priority,
       type: form.type,
     }
-
+    if (devSelection.current) {
+      ticket.assignedDev = devSelection.current._id
+    }
     updateTicket(match.params.ticketId, ticket)
-      .then(res => console.log(res))
+      .then(res => {
+        console.log(res)
+        snackbarPayload.snackbarText = 'Successfully updated the ticket.'
+        snackbarPayload.snackbarSeverity = 'success'
+      })
+      .catch(err => {
+        console.log(err)
+        snackbarPayload.snackbarText = 'Could not update the ticket. Try again later.'
+        snackbarPayload.snackbarSeverity = 'error'
+      })
+      .finally(() => {
+        dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+        handleOpen()
+      })
   }
 
+  /**
+   * Handles the deletion of the ticket.
+   */
+  const handleDeleteTicket = () => {
+    deleteTicket(match.params.ticketId)
+      .then(res => {
+        snackbarPayload.snackbarText = 'Successfully deleted the ticket.'
+        snackbarPayload.snackbarSeverity = 'success'
+        setRedirect(true)
+      })
+      .catch(res => {
+        snackbarPayload.snackbarText = 'Could not delete the ticket. Try again later.'
+        snackbarPayload.snackbarSeverity = 'error'
+      })
+      .finally(() => {
+        dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+      })
 
+  }
+
+  /**
+   * Manages the opening of the confirmation dialog.
+   * @param {function} confirmAction - The function to be called upon confirmation.
+   */
+  const handleOpenConfirmation = (confirmAction) => {
+    if (confirmAction) {
+      setConfOpen(prevState => !prevState)
+      setConfAction(confirmAction)
+    } else {
+      setConfOpen(prevState => !prevState)
+      setConfAction(() => undefined)
+    }
+  }
   return (
     <div className={classes.root}>
+      {redirect && <Redirect to='/dashboard/projects' />}
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <HeaderLabel text='Ticket Details' />
@@ -141,60 +316,79 @@ export default function CenteredGrid({ match }) {
         {/* Project Details section */}
 
         <Grid container item xs={6}>
-          {Object.entries(details).map(([key, value]) => {
-            return <Grid item xs={6} >
-              <Grid item xs={12}>
-                <Typography variant='h5'>
-                  {key}
-                </Typography>
+          {
+            isLoading.details ?
+              <Grid item xs={12} style={{ textAlign: 'center' }}>
+                <CircularProgress size='20rem' />
               </Grid>
-              <Grid item xs={12}>
-                <Typography variant='h6'>
-                  {value}
-                </Typography>
-              </Grid>
-            </Grid>
-          })
+              :
+              Object.entries(details).map(([key, value]) => {
+                return <Grid item xs={6} key={key + ' ' + value}>
+                  <Grid item xs={12}>
+                    <Typography variant='h5'>
+                      {key}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>
+                      {value}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              })
           }
 
         </Grid>
 
 
         <Grid container item xs={6} spacing={2}>
-          <Grid item xs={12} component={Paper}>
+          <Grid item xs={12} component={Paper} classes={{ root: classes.paper }}>
             <Typography variant='h4'>
               Comments
             </Typography>
             <List style={{ minHeight: '26vh', maxHeight: '26vh', overflow: 'auto' }}>
-              <ListItem>
-
-              </ListItem>
 
               {
-                comments.map((comment) => (
-                  <Fragment key={comment._id}>
-                    <ListItem alignItems="flex-start">
-                      <ListItemText
-                        primary={`${comment.user.first_name} ${comment.user.last_name}`}
-                        secondary={
-                          <React.Fragment>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              classes={{ root: classes.inline }}
-                              color="textPrimary"
-                            >
-                              {comment.text}
-                            </Typography>
-                            Posted at: {comment.timePosted}
-                          </React.Fragment>
-                        }
-                      />
+                isLoading.comments &&
+                <ListItem style={{ width: '40%', margin: 'auto' }}>
+                  <CircularProgress size='12rem' />
+                </ListItem>
+              }
 
-                    </ListItem>
-                    <Divider variant="inset" component="li" />
-                  </Fragment>
-                ))
+              {
+                (!isLoading.comments && comments.length) ?
+                  comments.map((comment) => (
+                    <Fragment key={comment._id}>
+                      <ListItem alignItems="flex-start">
+                        <ListItemText
+                          primary={comment.user.name}
+                          secondary={
+                            <React.Fragment>
+                              <Typography
+                                component="span"
+                                variant="body2"
+                                classes={{ root: classes.inline }}
+                                color="textPrimary"
+                              >
+                                {comment.text}
+                              </Typography>
+                            Posted at: {comment.timePosted}
+                            </React.Fragment>
+                          }
+                        />
+                        <IconButton edge='start' onClick={() => handleOpenConfirmation(() => handleDeleteComment(comment._id))}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItem>
+                      <Divider variant="inset" component="li" />
+                    </Fragment>
+                  ))
+                  :
+                  <ListItem style={{ width: '60%', margin: 'auto' }}>
+                    <Typography variant='h4'>
+                      No Comments Yet!
+                  </Typography>
+                  </ListItem>
               }
 
             </List>
@@ -203,13 +397,13 @@ export default function CenteredGrid({ match }) {
               label="Add Comment"
               type="text"
               variant="outlined"
-              value={commentText}
+              value={newCommentText}
               onChange={e => handleCommentText(e.target.value)}
               fullWidth
             />
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" color="secondary" fullWidth onClick={handlePostComment}>
+            <Button variant="contained" color="primary" fullWidth onClick={handlePostComment} disabled={!newCommentText}>
               Submit
             </Button>
           </Grid>
@@ -218,33 +412,64 @@ export default function CenteredGrid({ match }) {
 
         <Grid item xs={12}>
           <Table
+            tableHeight='22vh'
+            loading={isLoading.history}
             title='Ticket History'
             data={history}
             dense={true}
             handleSelect={() => console.log()}
+            rowKey={'oldValue'}
           />
         </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" color="secondary" fullWidth onClick={handleOpen}>
-            Edit Ticket
-        </Button>
-        </Grid>
+
+        {
+          ((store.role === "Admin") || (store.role === "Project Manager")) &&
+          <Fragment>
+            <Grid item xs={6}>
+              <Button variant="contained" color="primary" fullWidth onClick={handleOpen}>
+                Edit Ticket
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant="contained" color="secondary" fullWidth onClick={() => handleOpenConfirmation(handleDeleteTicket)}>
+                Delete
+              </Button>
+            </Grid>
+          </Fragment>
+
+        }
+
+        {
+          (store.role === "Developer") &&
+          <Fragment>
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary" fullWidth onClick={handleOpen}>
+                Edit Ticket
+              </Button>
+            </Grid>
+          </Fragment>
+
+        }
+
+
+
       </Grid>
       <DialogForm
-        isOpen={isFormOpen}
+        isOpen={form.isOpen}
         handleOpen={handleOpen}
-        handleChange={handleChange}
+        handleChange={handleFormChange}
         titleTFValue={form.title}
         descriptionTFValue={form.description}
         dialogTitle={'Edit Ticket'}
         dialogDescription={'Edit the values below and click save'}
-        handleSubmit={handleSubmit}
+        handleSubmit={handleSubmitTicketUpdate}
+        error={form.error}
       >
         <FormControl variant="filled" className={classes.formControl} fullWidth>
           <Autocomplete
             options={['open', 'closed']}
             value={form.status}
-            onChange={(e, newValue) => { handleChange(newValue, 'status') }}
+            onChange={(e, newValue) => { handleFormChange(newValue, 'status') }}
             renderInput={(params) => <TextField {...params} label="Status" variant="outlined" />}
           />
         </FormControl>
@@ -252,8 +477,9 @@ export default function CenteredGrid({ match }) {
           <Autocomplete
             id="combo-box-demo"
             options={devList}
-            onChange={(e, newValue) => { devSelection.current = newValue }}
-            getOptionLabel={(option) => `${option.first_name} ${option.last_name}`}
+            value={devSelection.current}
+            onChange={(e, newValue) => { devSelection.current = newValue; console.log(devSelection.current) }}
+            getOptionLabel={(option) => option.name}
             renderInput={(params) => <TextField {...params} label="Assign a developer" variant="outlined" />}
           />
         </FormControl>
@@ -261,7 +487,7 @@ export default function CenteredGrid({ match }) {
           <Autocomplete
             options={['high', 'medium', 'low', 'none']}
             value={form.priority}
-            onChange={(e, newValue) => { handleChange(newValue, 'priority') }}
+            onChange={(e, newValue) => { handleFormChange(newValue, 'priority') }}
             renderInput={(params) => <TextField {...params} label="Priority" variant="outlined" />}
           />
         </FormControl>
@@ -269,11 +495,20 @@ export default function CenteredGrid({ match }) {
           <Autocomplete
             options={['bug']}
             value={form.type}
-            onChange={(e, newValue) => { handleChange(newValue, 'type') }}
+            onChange={(e, newValue) => { handleFormChange(newValue, 'type') }}
             renderInput={(params) => <TextField {...params} label="Type" variant="outlined" />}
           />
         </FormControl>
       </DialogForm>
+      <ConfirmationDialog
+        titleText='Confirm Action'
+        descriptionText='Are you sure you want to delete this?'
+        open={isConfOpen}
+        handleOpen={handleOpenConfirmation}
+        handleConfirm={confAction}
+      />
     </div >
   );
 }
+
+export default TicketDetails
