@@ -13,7 +13,7 @@ import { Context, SocketContext } from '../global/Store'
 import { Link } from 'react-router-dom'
 import HeaderLabel from '../components/HeaderLabel'
 import ConfirmationDialog from '../components/ConfirmationDialog'
-import {snackbarPayload, OPENSNACKBAR} from '../helpers/constants'
+import { snackbarPayload, OPENSNACKBAR } from '../helpers/constants'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -108,7 +108,11 @@ const Home = () => {
                     setTickets(project.tickets)
                     setTeam(project.team)
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    snackbarPayload.snackbarText = 'Something went wrong. Try again later.'
+                    snackbarPayload.snackbarSeverity = 'error'
+                    dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+                })
         }
         // eslint-disable-next-line
     }, [selectedProjectId])
@@ -139,11 +143,10 @@ const Home = () => {
                 prevState.push(ticket)
                 return [...prevState]
             })
-            console.log('recieved the new ticket', ticket)
+
         })
         socket.on('newTeam', team => {
             setTeam(team)
-            console.log('recieved the team', team)
         })
 
         return function cleanup() {
@@ -236,7 +239,7 @@ const Home = () => {
             })
             .finally(() => {
                 dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
-              })
+            })
     }
 
     /**
@@ -267,8 +270,8 @@ const Home = () => {
             })
             .finally(() => {
                 dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
-              })
-            
+            })
+
     }
 
     /**
@@ -292,11 +295,11 @@ const Home = () => {
             .catch(err => {
                 snackbarPayload.snackbarText = 'Something went wrong creating the ticket. Try again later.'
                 snackbarPayload.snackbarSeverity = 'error'
-           
+
             })
             .finally(() => {
                 dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
-              })
+            })
     }
 
 
@@ -318,14 +321,14 @@ const Home = () => {
 
 
 
-    
+
 
     /**
      * Ensures required fields are filled and then calls the appropriate
      * submit function.
      */
     const handleFormSubmit = () => {
-        console.log(form.title)
+
         if (requiredFieldsNotFilled) {
             setForm(prevForm => ({ ...prevForm, error: "please fill the required fields" }))
         } else {

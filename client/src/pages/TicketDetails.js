@@ -178,7 +178,6 @@ const TicketDetails = ({ match }) => {
    * Opens the dialog form and sets the textfields to the ticket specs.
    */
   const handleOpen = () => {
-    console.log(details)
     setForm(prevForm => ({
       title: details.title,
       description: details.description,
@@ -209,12 +208,10 @@ const TicketDetails = ({ match }) => {
 
     postComment(match.params.ticketId, comment)
       .then(res => {
-        console.log(res)
         snackbarPayload.snackbarText = 'Successfully posted comment'
         snackbarPayload.snackbarSeverity = 'success'
       })
       .catch(err => {
-        console.log(err)
         snackbarPayload.snackbarText = 'Could not post comment. Try again later.'
         snackbarPayload.snackbarSeverity = 'error'
       })
@@ -230,12 +227,10 @@ const TicketDetails = ({ match }) => {
   const handleDeleteComment = (commentId) => {
     deleteComment(commentId, match.params.ticketId)
       .then(res => {
-        console.log(res)
         snackbarPayload.snackbarText = 'Successfully deleted comment'
         snackbarPayload.snackbarSeverity = 'success'
       })
       .catch(res => {
-        console.log(res)
         snackbarPayload.snackbarText = 'Could not delete comment. Try again later.'
         snackbarPayload.snackbarSeverity = 'error'
       })
@@ -263,12 +258,10 @@ const TicketDetails = ({ match }) => {
     }
     updateTicket(match.params.ticketId, ticket)
       .then(res => {
-        console.log(res)
         snackbarPayload.snackbarText = 'Successfully updated the ticket.'
         snackbarPayload.snackbarSeverity = 'success'
       })
       .catch(err => {
-        console.log(err)
         snackbarPayload.snackbarText = 'Could not update the ticket. Try again later.'
         snackbarPayload.snackbarSeverity = 'error'
       })
@@ -382,9 +375,13 @@ const TicketDetails = ({ match }) => {
                             </React.Fragment>
                           }
                         />
-                        <IconButton edge='start' onClick={() => handleOpenConfirmation(() => handleDeleteComment(comment._id))}>
-                          <DeleteIcon />
-                        </IconButton>
+                        {
+                          (comment.user._id === store.userId) &&
+                          <IconButton edge='start' onClick={() => handleOpenConfirmation(() => handleDeleteComment(comment._id))}>
+                            <DeleteIcon />
+                          </IconButton>
+                        }
+
                       </ListItem>
                       <Divider variant="inset" component="li" />
                     </Fragment>
@@ -423,7 +420,7 @@ const TicketDetails = ({ match }) => {
             title='Ticket History'
             data={history}
             dense={true}
-            handleSelect={() => console.log()}
+            handleSelect={() => undefined}
             rowKey={'oldValue'}
           />
         </Grid>
@@ -484,7 +481,7 @@ const TicketDetails = ({ match }) => {
             id="combo-box-demo"
             options={devList}
             value={devSelection.current}
-            onChange={(e, newValue) => { devSelection.current = newValue; console.log(devSelection.current) }}
+            onChange={(e, newValue) => { devSelection.current = newValue}}
             getOptionLabel={(option) => option.name}
             renderInput={(params) => <TextField {...params} label="Assign a developer" variant="outlined" />}
           />

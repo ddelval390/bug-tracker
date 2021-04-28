@@ -82,14 +82,14 @@ const createTicket = async (req, res) => {
 
         const filteredTicket ={
             _id: ticket._id,
+            status: ticket.status,
+            priority: ticket.priority,
+            type: ticket.type,
             title: ticket.title,
             description: ticket.description,
-            status: ticket.status,
-            type: ticket.type,
-            priority: ticket.priority,
         }
 
-        io.getIO().to(req.project._id.toString()).emit('newTicket', filteredTicket)
+        io.getIO().to(req.params.projectId).emit('newTicket', filteredTicket)
         return res.status(200).json({
             message: "Successfully created ticket",
         })
@@ -123,7 +123,7 @@ const updateTeam = async (req, res) => {
             .populate('team')
             .execPopulate()
 
-        io.getIO().to(req.project._id.toString()).emit('newTeam', req.project.team)
+        io.getIO().to(req.params.projectId).emit('newTeam', req.project.team)
         return res.status(200).json({
             message: "Successfully updated the team",
         })
@@ -153,7 +153,7 @@ const returnTicket = async (req, res) => {
         await req.ticket
             .populate('submitter')
             .populate('comments')
-            .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 0, name: 1 } } },)
+            .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 1, name: 1 } } },)
             .populate('assignedDev')
             .execPopulate()
         return res.status(200).json({
@@ -189,8 +189,7 @@ const updateTicket = async (req, res) => {
             .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 0, name: 1 } } },)
             .populate('assignedDev')
             .execPopulate()
-        const ticketId = req.ticket._id.toString()
-        io.getIO().to(ticketId).emit('ticketUpdate', req.ticket)
+        io.getIO().to(req.params.ticketId).emit('ticketUpdate', req.ticket)
         await req.ticket.save()
         return res.status(200).json({
             message: "Successfully updated the ticket",
@@ -222,7 +221,6 @@ const postComment = async (req, res) => {
         await comment.save()
         req.ticket.comments.unshift(comment)
         await req.ticket.save()
-        const ticketId = req.ticket._id.toString()
         await req.ticket
             .populate('submitter')
             .populate('comments')
@@ -230,7 +228,7 @@ const postComment = async (req, res) => {
             .populate('assignedDev')
             .execPopulate()
         const postedComment  = req.ticket.comments.pop()
-        io.getIO().to(ticketId).emit('newComment', postedComment)
+        io.getIO().to(req.params.ticketId).emit('newComment', postedComment)
         return res.status(200).json({
             message: "Successfully posted comment"
         })
@@ -245,7 +243,6 @@ const postComment = async (req, res) => {
 const deleteComment = async (req, res) => {
     try {
         req.comment.remove()
-        console.log(typeof req.params.ticketId)
         io.getIO().to(req.params.ticketId).emit('deleteComment', req.params.commentId)
         return res.status(200).json({
             success: 'Successfully deleted comment'

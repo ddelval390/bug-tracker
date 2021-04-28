@@ -64,7 +64,6 @@ export default function BasicTable({ loading, selected, handleSelect, title, dat
      * @param {number} newPage - The number of the new page.
      */
     const handleChangePage = (event, newPage) => {
-        console.log(typeof newPage)
         setPage(newPage)
     }
 

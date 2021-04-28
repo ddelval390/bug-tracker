@@ -71,7 +71,6 @@ const AdminTeams = () => {
                 .then(res => res.data.projects)
             const users = await getAllUsers()
                 .then(res => res.data.userList)
-            console.log(users)
             setProjectData(projects)
             setAllUsers(users)
             setLoadingProjects(false)
@@ -111,12 +110,10 @@ const AdminTeams = () => {
             }
             updateTeam(selectedProjectId, newTeam)
                 .then(res => {
-                    console.log(res)
                     snackbarPayload.snackbarText = 'Successfully updated the team'
                     snackbarPayload.snackbarSeverity = 'success'
                 })
                 .catch(err => {
-                    console.log(err)
                     snackbarPayload.snackbarText = 'Could not update the team. Try again later.'
                     snackbarPayload.snackbarSeverity = 'error'
                 })
