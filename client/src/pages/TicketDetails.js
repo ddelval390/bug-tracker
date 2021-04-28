@@ -137,6 +137,12 @@ const TicketDetails = ({ match }) => {
    * Upon recieving any other updates, the ticket details and history are replaced.
    */
   useEffect(() => {
+    socket.on('deleteComment', commentId => {
+      setComments(prevComments => {
+        const newComments = prevComments.filter(comment => comment._id !== commentId)
+        return newComments
+      })
+    })
     socket.on('newComment', comment => {
       setComments(prevComments => { prevComments.unshift(comment); return [...prevComments] })
     })
@@ -222,7 +228,7 @@ const TicketDetails = ({ match }) => {
    * @param {string} commentId - The "_id" field of the comment to be deleted.
    */
   const handleDeleteComment = (commentId) => {
-    deleteComment(commentId)
+    deleteComment(commentId, match.params.ticketId)
       .then(res => {
         console.log(res)
         snackbarPayload.snackbarText = 'Successfully deleted comment'

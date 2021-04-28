@@ -229,8 +229,8 @@ const postComment = async (req, res) => {
             .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 1, name: 1 } } },)
             .populate('assignedDev')
             .execPopulate()
-        const opC = req.ticket.comments.pop()
-        io.getIO().to(ticketId).emit('newComment', opC)
+        const postedComment  = req.ticket.comments.pop()
+        io.getIO().to(ticketId).emit('newComment', postedComment)
         return res.status(200).json({
             message: "Successfully posted comment"
         })
@@ -245,7 +245,8 @@ const postComment = async (req, res) => {
 const deleteComment = async (req, res) => {
     try {
         req.comment.remove()
-        io.getIO().to(ticketId).emit('newTicketUpdate')
+        console.log(typeof req.params.ticketId)
+        io.getIO().to(req.params.ticketId).emit('deleteComment', req.params.commentId)
         return res.status(200).json({
             success: 'Successfully deleted comment'
         })

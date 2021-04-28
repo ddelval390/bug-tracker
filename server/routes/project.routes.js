@@ -25,7 +25,7 @@ router.route('/api/projects/ticket/:ticketId')
 router.route('/api/projects/ticket/:ticketId/comments')
     .post(projectCtrl.postComment)
 
-router.route('/api/projects/ticket/comments/:commentId')
+router.route('/api/projects/ticket/:ticketId/comments/:commentId')
     .delete(projectCtrl.deleteComment)
 
 router.param('commentId', projectCtrl.findComment)

@@ -129,10 +129,11 @@ const getTicket = async (ticketId) => {
 /**
  * Sends an api request to delete a comment from a ticket.
  * @param {string} commentId - The "_id" field of the comment to be deleted.
+ * @param {string} ticketId - The "_id" field of the ticket where the comment is located.
  * @returns Server response
  */
-const deleteComment = async (commentId) => {
-    const response = await axios.delete(`/api/projects/ticket/comments/${commentId}`)
+const deleteComment = async (commentId, ticketId) => {
+    const response = await axios.delete(`/api/projects/ticket/${ticketId}/comments/${commentId}`)
         .then(res => {
             return res
         })

@@ -1,6 +1,6 @@
-const MONGOURI = process.env.MONGOURI 
-const PORT = process.env.PORT 
-const SECRET = process.env.SECRET 
+const MONGOURI = "mongodb://127.0.0.1:27017/bug-tracker"
+const PORT = 5000
+const SECRET = '123'
 
 
 export {
