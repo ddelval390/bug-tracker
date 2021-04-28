@@ -39,10 +39,11 @@ const deleteProject = async (projectId) => {
 /**
  * Sends an api request to return the a json of a project by project ID.
  * @param {string} projectId  - The "_id" field of the project to be returned.
+ * @param {object} cancelToken - Axios cancel token
  * @returns  Server response containing project data or error
  */
-const getProject = async (projectId) => {
-    const response = await axios.get(`/api/projects/${projectId}`)
+const getProject = async (projectId, cancelToken) => {
+    const response = await axios.get(`/api/projects/${projectId}`, {cancelToken: cancelToken})
         .then(res => {
             return res
         })
@@ -112,10 +113,11 @@ const updateTeam = async (projectId, newTeam) => {
 /**
  * Sends an api request to retrieve a ticket.
  * @param {string} ticketId - The "_id" field of the project to return.
+ * @param {object} cancelToken - Axios cancel token.
  * @returns Server response containing the ticket object.
  */
-const getTicket = async (ticketId) => {
-    const response = await axios.get(`/api/projects/ticket/${ticketId}`)
+const getTicket = async (ticketId, cancelToken) => {
+    const response = await axios.get(`/api/projects/ticket/${ticketId}`, {cancelToken: cancelToken})
         .then(res => {
             return res
         })

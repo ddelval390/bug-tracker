@@ -7,7 +7,7 @@ import HeaderLabel from '../components/HeaderLabel'
 import { Link } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import { Context } from '../global/Store'
-
+import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-export default function CenteredGrid({ match }) {
+const UserTickets = ({ match }) => {
     const classes = useStyles()
 
     const [selectedTicketId, setSelectedTicketId] = useState('')
@@ -52,13 +52,17 @@ export default function CenteredGrid({ match }) {
      * Loads tickets relevant to the user into a table.
      */
     useEffect(() => {
+        const source = axios.CancelToken.source()
         setTicketsLoading(true)
-        getUserTickets(store.userId)
+        getUserTickets(store.userId, source.token)
             .then(res => {
                 const ticketData = res.data.tickets
                 setTickets(ticketData)
                 setTicketsLoading(false)
             })
+            return () => {
+                source.cancel()
+            }
         // eslint-disable-next-line
     }, [])
 
@@ -110,3 +114,5 @@ export default function CenteredGrid({ match }) {
         </div>
     )
 }
+
+export default UserTickets

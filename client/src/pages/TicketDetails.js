@@ -22,6 +22,8 @@ import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import ConfirmationDialog from '../components/ConfirmationDialog'
 import { OPENSNACKBAR, snackbarPayload } from '../helpers/constants'
+import axios from 'axios'
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,12 +80,13 @@ const TicketDetails = ({ match }) => {
    * Retrieves ticket data.
    */
   useEffect(() => {
+    const source = axios.CancelToken.source()
     setLoading({
       comments: true,
       history: true,
       details: true,
     })
-    getTicket(match.params.ticketId)
+    getTicket(match.params.ticketId, source.token)
       .then(res => {
         const submitterFullName = res.data.ticket.submitter.name
         const devFullName = res.data.ticket.assignedDev ? res.data.ticket.assignedDev.name : ''
@@ -107,6 +110,10 @@ const TicketDetails = ({ match }) => {
           details: false,
         })
       })
+
+      return () => {
+        source.cancel()
+      }
     // eslint-disable-next-line
   }, [])
 
@@ -127,7 +134,7 @@ const TicketDetails = ({ match }) => {
    */
   useEffect(() => {
     socket.emit('ticket updates', match.params.ticketId)
-    return function cleanup() {
+    return () => {
       socket.emit('disconnect ticket updates', match.params.ticketId)
     }
   }, [socket, match.params.ticketId])
@@ -159,7 +166,7 @@ const TicketDetails = ({ match }) => {
         'submission date': ticket.submissionDate,
       })
     })
-    return function cleanup() {
+    return () => {
       socket.off('newComment')
       socket.off('ticketUpdate')
     }
@@ -377,7 +384,7 @@ const TicketDetails = ({ match }) => {
                         />
                         {
                           (comment.user._id === store.userId) &&
-                          <IconButton edge='start' onClick={() => handleOpenConfirmation(() => handleDeleteComment(comment._id))}>
+                          <IconButton edge='start' color='secondary' onClick={() => handleOpenConfirmation(() => handleDeleteComment(comment._id))}>
                             <DeleteIcon />
                           </IconButton>
                         }

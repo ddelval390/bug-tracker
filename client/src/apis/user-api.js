@@ -21,10 +21,11 @@ const getUsersByRole = async (role) => {
 /**
  * Sends an api request to retrieve a user's projects.
  * @param {string} userId - The "_id" field of the requested user
+ * @param {object} cancelToken - Axios cancel token.
  * @returns Server response containing list of projects where the user is in the team, the assigned dev, or submitter.
  */
-const getUserProjects = async (userId) => {
-    const response = await axios.get(`/api/users/${userId}/projects`)
+const getUserProjects = async (userId, cancelToken) => {
+    const response = await axios.get(`/api/users/${userId}/projects`,{cancelToken: cancelToken})
         .then(res => {
             return res
         })
@@ -38,11 +39,12 @@ const getUserProjects = async (userId) => {
 
 /**
  * Sends an api request to return relevant tickets to the user.
- * @param {string} userId - The "_id" field of the user
+ * @param {string} userId - The "_id" field of the user.
+ * @param {object} cancelToken - Axios cancel token.
  * @returns Server response containing an array of the users tickets.
  */
-const getUserTickets = async (userId) => {
-    const response = await axios.get(`/api/users/${userId}/tickets`)
+const getUserTickets = async (userId, cancelToken) => {
+    const response = await axios.get(`/api/users/${userId}/tickets`, cancelToken)
         .then(res => {
             return res
         })
@@ -56,10 +58,11 @@ const getUserTickets = async (userId) => {
 
 /**
  * Sends an api request to get all users in the database.
+ * @param cancelToken - Axios cancel token.
  * @returns Server response returning an array containing user objects of all users.
  */
-const getAllUsers = async () => {
-    const response = await axios.get(`/api/users`)
+const getAllUsers = async (cancelToken) => {
+    const response = await axios.get(`/api/users`, {cancelToken: cancelToken})
         .then(res => {
             return res
         })

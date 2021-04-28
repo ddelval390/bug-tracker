@@ -14,6 +14,7 @@ import Select from '@material-ui/core/Select'
 import { Context } from '../global/Store'
 import { snackbarPayload } from '../helpers/constants'
 import { OPENSNACKBAR } from '../helpers/constants'
+import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,12 +61,17 @@ const AdminRoles = () => {
      * Retrieves all users and loads them into a table
      */
     useEffect(() => {
+        const source = axios.CancelToken.source()
         setUsersLoading(true)
-        getAllUsers()
+        getAllUsers(source.token)
             .then(res => {
                 setAllUsers(res.data.userList)
                 setUsersLoading(false)
             })
+
+            return () => {
+                source.cancel()
+            }
         // eslint-disable-next-line
     }, [])
 

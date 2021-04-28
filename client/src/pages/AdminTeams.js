@@ -18,7 +18,7 @@ import Box from '@material-ui/core/Box'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { Typography } from '@material-ui/core'
 import {OPENSNACKBAR, snackbarPayload} from '../helpers/constants'
-
+import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -65,11 +65,12 @@ const AdminTeams = () => {
      * Loads all projects and loads all users.
      */
     useEffect(() => {
+        const source = axios.CancelToken.source()
         setLoadingProjects(true)
         const func = async () => {
-            const projects = await getUserProjects(store.userId)
+            const projects = await getUserProjects(store.userId, source.token)
                 .then(res => res.data.projects)
-            const users = await getAllUsers()
+            const users = await getAllUsers(source.token)
                 .then(res => res.data.userList)
             setProjectData(projects)
             setAllUsers(users)
@@ -78,6 +79,10 @@ const AdminTeams = () => {
         }
 
         func()
+
+        return () => {
+            source.cancel()
+        }
         // eslint-disable-next-line
     }, [])
 

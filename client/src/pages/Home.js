@@ -14,6 +14,8 @@ import { Link } from 'react-router-dom'
 import HeaderLabel from '../components/HeaderLabel'
 import ConfirmationDialog from '../components/ConfirmationDialog'
 import { snackbarPayload, OPENSNACKBAR } from '../helpers/constants'
+import axios from 'axios'
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -82,12 +84,17 @@ const Home = () => {
      * Loads the user's relevant projects and stores them into an array
      */
     useEffect(() => {
+        const source = axios.CancelToken.source()
         setLoading(prevLoading => ({ ...prevLoading, projects: true }))
-        getUserProjects(store.userId)
+        getUserProjects(store.userId, source.token)
             .then(res => {
                 setLoading(prevLoading => ({ ...prevLoading, projects: false }))
                 setProjects(res.data.projects)
             })
+
+        return () => {
+            source.cancel()
+        }
         // eslint-disable-next-line
     }, [])
 
@@ -95,13 +102,14 @@ const Home = () => {
      * Upon the selection of a new project, that projects team and tickets will be loaded.
      */
     useEffect(() => {
+        const source = axios.CancelToken.source()
         if (selectedProjectId !== '') {
             if (previousSelectedProjectId.current) {
                 socket.emit('disconnect project updates', previousSelectedProjectId.current)
             }
             socket.emit('project updates', selectedProjectId)
             setLoading(prevLoading => ({ ...prevLoading, team: true, tickets: true }))
-            getProject(selectedProjectId)
+            getProject(selectedProjectId, source.token)
                 .then(res => {
                     setLoading(prevLoading => ({ ...prevLoading, team: false, tickets: false }))
                     const project = res.data.project
@@ -113,6 +121,10 @@ const Home = () => {
                     snackbarPayload.snackbarSeverity = 'error'
                     dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
                 })
+        }
+
+        return () => {
+            source.cancel()
         }
         // eslint-disable-next-line
     }, [selectedProjectId])
@@ -128,7 +140,7 @@ const Home = () => {
             }
             socket.emit('project updates', selectedProjectId)
         }
-        return function cleanup() {
+        return () => {
             socket.emit('disconnect project updates', selectedProjectId)
         }
     }, [selectedProjectId, socket])
@@ -149,7 +161,7 @@ const Home = () => {
             setTeam(team)
         })
 
-        return function cleanup() {
+        return () => {
             socket.off('newTicket')
             socket.off('newTeam')
             socket.emit('disconnect homePage')
