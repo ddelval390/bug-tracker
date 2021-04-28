@@ -236,7 +236,6 @@ const Home = () => {
             })
             .finally(() => {
                 dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
-                handleOpenForm()
               })
     }
 

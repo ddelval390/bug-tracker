@@ -299,7 +299,7 @@ const TicketDetails = ({ match }) => {
   const handleOpenConfirmation = (confirmAction) => {
     if (confirmAction) {
       setConfOpen(prevState => !prevState)
-      setConfAction(confirmAction)
+      setConfAction(() => confirmAction)
     } else {
       setConfOpen(prevState => !prevState)
       setConfAction(() => undefined)
@@ -431,7 +431,7 @@ const TicketDetails = ({ match }) => {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button variant="contained" color="secondary" fullWidth onClick={() => handleOpenConfirmation(() => handleDeleteTicket())}>
+              <Button variant="contained" color="secondary" fullWidth onClick={() => handleOpenConfirmation(handleDeleteTicket)}>
                 Delete
               </Button>
             </Grid>
