@@ -53,7 +53,7 @@ app.get('*', (req, res) => {
 mongoose.Promise = global.Promise
 mongoose.connect(MONGOURI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
 mongoose.connection.on('error', () => {
-  throw new Error(`unable to connect to database: ${config.mongoUri}`)
+  throw new Error(`unable to connect to database`)
 })
 
 const server = app.listen(PORT,() => {
