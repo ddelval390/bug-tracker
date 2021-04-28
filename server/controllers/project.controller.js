@@ -227,7 +227,7 @@ const postComment = async (req, res) => {
             .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 1, name: 1 } } },)
             .populate('assignedDev')
             .execPopulate()
-        const postedComment  = req.ticket.comments.pop()
+        const postedComment  = req.ticket.comments.shift()
         io.getIO().to(req.params.ticketId).emit('newComment', postedComment)
         return res.status(200).json({
             message: "Successfully posted comment"
