@@ -138,7 +138,7 @@ const TicketDetails = ({ match }) => {
    */
   useEffect(() => {
     socket.on('newComment', comment => {
-      setComments(prevComments => { prevComments.unshift(comment); return prevComments })
+      setComments(prevComments => { prevComments.unshift(comment); return [...prevComments] })
     })
     socket.on('ticketUpdate', ticket => {
       setHistory(ticket.history)
@@ -307,7 +307,7 @@ const TicketDetails = ({ match }) => {
   }
   return (
     <div className={classes.root}>
-      {redirect && <Redirect to='/dashboard/projects' />}
+      {redirect && <Redirect to='/dashboard' />}
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <HeaderLabel text='Ticket Details' />

@@ -87,7 +87,6 @@ const createTicket = async (req, res) => {
             description: ticket.description,
             type: ticket.type,
             priority: ticket.priority,
-            submissionDate: ticket.submissionDate
         }
 
         io.getIO().to(req.project._id.toString()).emit('newTicket', filteredTicket)

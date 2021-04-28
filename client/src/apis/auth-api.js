@@ -12,7 +12,7 @@ const connUser = async (userData) => {
             return res
         })
         .catch(err => {
-            console.log(err.response)
+            
             throw err
         })
 

@@ -137,7 +137,7 @@ const Home = () => {
         socket.on('newTicket', ticket => {
             setTickets(prevState => {
                 prevState.push(ticket)
-                return prevState
+                return [...prevState]
             })
             console.log('recieved the new ticket', ticket)
         })
@@ -224,6 +224,11 @@ const Home = () => {
             .then(res => {
                 snackbarPayload.snackbarText = 'Successfully deleted the project'
                 snackbarPayload.snackbarSeverity = 'success'
+
+                setProjects(prevProjects => {
+                    const newList = prevProjects.filter(project => project._id !== projectId)
+                    return newList
+                })
             })
             .catch(err => {
                 snackbarPayload.snackbarText = 'Something went wrong deleting the project. Try again later.'
@@ -253,7 +258,7 @@ const Home = () => {
                 const newProject = res.data.project
                 setProjects(prevProjects => {
                     prevProjects.push(newProject)
-                    return prevProjects
+                    return [...prevProjects]
                 })
 
             })
@@ -355,7 +360,7 @@ const Home = () => {
                             </Button>
                         </Grid>
                         <Grid item md={3} xs={12}>
-                            <Button variant='contained' color='secondary' fullWidth classes={{ root: classes.button }} onClick={() => handleOpenConfirmation(() => handleDeleteProject(selectedProjectId))} disabled={!selectedProjectId}>
+                            <Button variant='contained' color='secondary' fullWidth classes={{ root: classes.button }} onClick={() => handleOpenConfirmation(() => handleDeleteProject(selectedProjectId))} disabled={(!selectedProjectId) || store.isDemoUser}>
                                 Delete Selected Project
                             </Button>
                         </Grid>
