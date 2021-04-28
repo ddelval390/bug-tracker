@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import { Paper } from '@material-ui/core';
-import Table from '../components/Table';
-import { getAllUsers, updateUser } from '../apis/user-api';
+import React, { useState, useEffect, useContext } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
+import { Paper } from '@material-ui/core'
+import Table from '../components/Table'
+import { getAllUsers, updateUser } from '../apis/user-api'
 import HeaderLabel from '../components/HeaderLabel'
-import Box from '@material-ui/core/Box';
-import { Typography } from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import { Context } from '../global/Store';
+import Box from '@material-ui/core/Box'
+import { Typography } from '@material-ui/core'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormControl from '@material-ui/core/FormControl'
+import Select from '@material-ui/core/Select'
+import { Context } from '../global/Store'
 import {snackbarPayload} from '../helpers/constants'
-import {OPENSNACKBAR} from '../helpers/constants';
+import {OPENSNACKBAR} from '../helpers/constants'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,16 +44,16 @@ const useStyles = makeStyles((theme) => ({
     button: {
 
     }
-}));
+}))
 
 const AdminRoles = () => {
-    const classes = useStyles();
+    const classes = useStyles()
 
-    const [selectedUserId, setSelectedUserId] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState('')
     const [users, setAllUsers] = useState([])
     const [usersLoading, setUsersLoading] = useState(false)
     const [role, setRole] = useState('')
-    const [, dispatch] = useContext(Context);
+    const [, dispatch] = useContext(Context)
 
 
 /**
@@ -76,7 +76,7 @@ const AdminRoles = () => {
  */
     const handleSelectUser = (event, id) => {
         if (selectedUserId === id) {
-            setSelectedUserId('');
+            setSelectedUserId('')
         } else {
             setSelectedUserId(id)
             const user = users.find(user => user._id === id)
@@ -156,7 +156,7 @@ const AdminRoles = () => {
 
             </Grid>
         </div>
-    );
+    )
 }
 
 export default AdminRoles

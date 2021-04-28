@@ -1,6 +1,6 @@
 import { Server } from 'socket.io'
 
-let io;
+let io
 
 const init = httpServer => {
     io = new Server(httpServer, {
@@ -16,7 +16,7 @@ const getIO = () => {
     if (!io) {
         throw new Error('Socket.io not initialized!')
     }
-    return io;
+    return io
 }
 
 export default {

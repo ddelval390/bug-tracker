@@ -1,8 +1,7 @@
-import Project from '../models/project.model.js';
+import Project from '../models/project.model.js'
 import Ticket from '../models/ticket.model.js'
 import Comment from '../models/comment.model.js'
 import io from '../socket.js'
-import { filter } from 'compression';
 
 
 const createProject = async (req, res) => {

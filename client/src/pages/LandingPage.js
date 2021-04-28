@@ -1,9 +1,11 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import React, {useContext } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper'
+import Grid from '@material-ui/core/Grid'
 import Image from '../assets/img/background_img.jpg'
-import { Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core'
+import { Context } from '../global/Store'
+import { Redirect} from 'react-router-dom'
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -30,12 +32,14 @@ const useStyles = makeStyles((theme) => ({
     padding: '.4rem',
 
 },
-}));
+}))
 const LandingPage = () => {
-  const classes = useStyles();
-
+  const classes = useStyles()
+  const [store] = useContext(Context)
+ 
   return (
     <div className={classes.root}>
+       {store.isLoggedIn && <Redirect to='/dashboard' />}
       <Grid container >
         <Grid item xs={12}>
           <Paper className={classes.paperContainer}>
@@ -46,7 +50,7 @@ const LandingPage = () => {
         </Grid>
       </Grid>
     </div>
-  );
+  )
 }
 
 export default LandingPage

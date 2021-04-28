@@ -9,7 +9,7 @@ import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/core/styles'
 import HeaderLabel from '../components/HeaderLabel'
 import { getUser, updateUser } from '../apis/user-api'
-import { Context } from '../global/Store';
+import { Context } from '../global/Store'
 import { OPENSNACKBAR } from '../helpers/constants'
 
 const useStyles = makeStyles(theme => ({
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 
 const Profile = ({ match }) => {
   const classes = useStyles()
-  const [, dispatch] = useContext(Context);
+  const [, dispatch] = useContext(Context)
   const [values, setValues] = useState({
     name: '',
     password: '',

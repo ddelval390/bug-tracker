@@ -1,18 +1,18 @@
-import React, { useState, useRef, useEffect, useContext, Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Table from '../components/Table';
-import Button from '@material-ui/core/Button';
-import Dialog from '../components/DialogForm';
-import FormControl from '@material-ui/core/FormControl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import React, { useState, useRef, useEffect, useContext, Fragment } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
+import Table from '../components/Table'
+import Button from '@material-ui/core/Button'
+import Dialog from '../components/DialogForm'
+import FormControl from '@material-ui/core/FormControl'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 import { createProject, deleteProject, getProject, createTicket } from '../apis/project-api'
-import { getUserProjects } from '../apis/user-api';
-import { Context, SocketContext } from '../global/Store';
-import { Link } from 'react-router-dom';
+import { getUserProjects } from '../apis/user-api'
+import { Context, SocketContext } from '../global/Store'
+import { Link } from 'react-router-dom'
 import HeaderLabel from '../components/HeaderLabel'
-import ConfirmationDialog from '../components/ConfirmationDialog';
+import ConfirmationDialog from '../components/ConfirmationDialog'
 import {snackbarPayload, OPENSNACKBAR} from '../helpers/constants'
 
 const useStyles = makeStyles((theme) => ({
@@ -44,10 +44,10 @@ const useStyles = makeStyles((theme) => ({
     button: {
 
     }
-}));
+}))
 
 const Home = () => {
-    const classes = useStyles();
+    const classes = useStyles()
 
     const [form, setForm] = useState({
         title: '',
@@ -62,10 +62,10 @@ const Home = () => {
         team: false,
 
     })
-    const [selectedProjectId, setSelectedProjectId] = useState('');
-    const [selectedTicketId, setSelectedTicketId] = useState('');
+    const [selectedProjectId, setSelectedProjectId] = useState('')
+    const [selectedTicketId, setSelectedTicketId] = useState('')
     const previousSelectedProjectId = useRef()
-    const [store, dispatch] = useContext(Context);
+    const [store, dispatch] = useContext(Context)
     const ticketTypeSelection = useRef()
     const ticketPrioritySelection = useRef()
 
@@ -162,7 +162,7 @@ const Home = () => {
      */
     const handleSelectProject = (event, id) => {
         if (selectedProjectId === id) {
-            setSelectedProjectId('');
+            setSelectedProjectId('')
         } else {
             setSelectedProjectId(prevState => {
                 previousSelectedProjectId.current = prevState
@@ -178,7 +178,7 @@ const Home = () => {
      */
     const handleSelectTicket = (event, name) => {
         if (selectedTicketId === name) {
-            setSelectedTicketId('');
+            setSelectedTicketId('')
         } else {
             setSelectedTicketId(name)
         }
@@ -462,7 +462,7 @@ const Home = () => {
             />
 
         </div>
-    );
+    )
 }
 
 export default Home

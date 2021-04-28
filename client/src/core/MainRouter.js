@@ -1,21 +1,24 @@
-import React, { Fragment } from 'react';
-import { Route, Switch } from 'react-router-dom';
-import Menu from './Menu';
-import LandingPage from '../pages/LandingPage';
-import Login from '../pages/Login';
-import SignUp from '../pages/Signup';
-import Home from '../pages/Home';
+import React, { Suspense, lazy } from 'react'
+import { Route, Switch } from 'react-router-dom'
+import Menu from './Menu'
 import PrivateRoute from '../components/PrivateRoute'
-import TicketDetails from '../pages/TicketDetails'
-import AdminTeams from '../pages/AdminTeams'
-import AdminRoles from '../pages/AdminRoles'
-import Profile from '../pages/Profile'
-import UserTickets from '../pages/UserTickets'
+
+
+const LandingPage = lazy(() => import('../pages/LandingPage'))
+const Login = lazy(() => import('../pages/Login'))
+const SignUp = lazy(() => import('../pages/Signup'))
+const Home = lazy(() => import('../pages/Home'))
+const TicketDetails = lazy(() => import('../pages/TicketDetails'))
+const AdminTeams = lazy(() => import('../pages/AdminTeams'))
+const AdminRoles = lazy(() => import('../pages/AdminRoles'))
+const Profile = lazy(() => import('../pages/Profile'))
+const UserTickets = lazy(() => import('../pages/UserTickets'))
+
 
 const MainRouter = () => {
     return (
-        <Fragment>
-            <Menu>
+        <Menu>
+            <Suspense fallback={<div>Loading...</div>}>
                 <Switch>
                     <Route exact path='/' component={LandingPage} />
                     <Route exact path='/login' component={Login} />
@@ -27,8 +30,8 @@ const MainRouter = () => {
                     <PrivateRoute exact path='/dashboard/admin/teams' component={AdminTeams} />
                     <PrivateRoute exact path='/dashboard/admin/user-roles' component={AdminRoles} />
                 </Switch>
-            </Menu>
-        </Fragment>
+            </Suspense>
+        </Menu>
     )
 }
 

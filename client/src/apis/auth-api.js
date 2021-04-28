@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"
 
 
 /**
@@ -13,7 +13,7 @@ const connUser = async (userData) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -22,14 +22,14 @@ const connUser = async (userData) => {
 /**
  * Sends an api request to server to validate a user's cookie.  
  */
-const cookieCheck = async () => {
-    const response = await axios.get("/auth/initauthcheck")
+const authCheck = async () => {
+    const response = await axios.get("/auth/authcheck")
         .then(res => {
             return res
         })
         .catch(err => {
             return err
-        });
+        })
 
     return response
 }
@@ -41,14 +41,14 @@ const cookieCheck = async () => {
 const logOut = () => {
     const response = axios.get("/auth/logout")
         .then(res => {
-            return res;
+            return res
         })
         .catch(err => {
-            console.log(err);
-            console.log(err.response);
+            console.log(err)
+            console.log(err.response)
         })
 
     return response
 }
 
-export { connUser, cookieCheck, logOut }
+export { connUser, authCheck, logOut }

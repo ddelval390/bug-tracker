@@ -32,7 +32,7 @@ ProjectSchema.pre('remove', async function (next) {
             comment.remove()
         })
     }
-    next();
-});
+    next()
+})
 
 export default mongoose.model('Project', ProjectSchema)

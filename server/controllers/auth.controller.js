@@ -5,34 +5,35 @@ import passport from 'passport'
  * and it creates a new user for users that are signing up.
  */
 const connectUser = (req, res, next) => {
-    passport.authenticate("local", ( err, user, info) => {
+    passport.authenticate("local", (err, user, info) => {
         if (err) {
-            return res.status(400).json({ errors: err });
+            return res.status(400).json({ errors: err })
         }
         if (!user) {
-            return res.status(400).json({ errors: "No user found" });
+            return res.status(400).json({ errors: "No user found" })
         }
         req.login(user, (err) => {
             if (err) {
-                return res.status(400).json({ errors: err });
+                return res.status(400).json({ errors: err })
             }
-            return res.status(200).json({success: `logged in ${user.id}`, user: user})
+            return res.status(200).json({ success: `logged in ${user.id}`, user: user })
         })
-    })(req, res, next);
+    })(req, res, next)
 }
 
 
 const logOutUser = (req, res) => {
     req.logout()
-    return res.status(200).json({success: `logged out`})
+    return res.status(200).json({ success: `logged out` })
 }
 
-const authenticationCheck = (req, res) =>{
+const authenticationCheck = (req, res) => {
     if (req.isAuthenticated()) {
-        return res.status(200).json({success: `user authenticated`, user: req.user})
+        return res.status(200).json({ success: `user authenticated`, user: req.user })
     }
-    return res.status(400).json({failed: 'user not authenticated'})
-   
-  }
+    return res.status(400).json({ failed: 'user not authenticated' })
 
-export {connectUser, logOutUser, authenticationCheck}
+}
+
+
+export { connectUser, logOutUser, authenticationCheck }

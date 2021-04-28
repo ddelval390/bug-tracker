@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 
 /**
  * Sends an api request to create a new project.
@@ -12,7 +12,7 @@ const createProject = async (projectData) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -30,7 +30,7 @@ const deleteProject = async (projectId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -48,7 +48,7 @@ const getProject = async (projectId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -67,7 +67,7 @@ const createTicket = async (projectId, ticket) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -85,7 +85,7 @@ const deleteTicket = async (ticketId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }
@@ -103,7 +103,7 @@ const updateTeam = async (projectId, newTeam) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -121,7 +121,7 @@ const getTicket = async (ticketId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }
@@ -138,7 +138,7 @@ const deleteComment = async (commentId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }
@@ -156,7 +156,7 @@ const postComment = async (ticketId, comment) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }
@@ -174,7 +174,7 @@ const updateTicket = async (ticketId, updatedTicket) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }

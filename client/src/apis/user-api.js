@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 
 /**
  * Sends an api request to get a list of users by role.
@@ -12,7 +12,7 @@ const getUsersByRole = async (role) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -30,7 +30,7 @@ const getUserProjects = async (userId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -48,7 +48,7 @@ const getUserTickets = async (userId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -65,7 +65,7 @@ const getAllUsers = async () => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
 
     return response
@@ -83,7 +83,7 @@ const getUser = async (userId) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }
@@ -101,7 +101,7 @@ const updateUser = async (userId, userUpdates) => {
         })
         .catch(err => {
             console.log(err.response)
-            throw err;
+            throw err
         })
     return response
 }

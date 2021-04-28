@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Table from '../components/Table';
-import { getUserTickets } from '../apis/user-api';
+import React, { useState, useEffect, useContext } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
+import Table from '../components/Table'
+import { getUserTickets } from '../apis/user-api'
 import HeaderLabel from '../components/HeaderLabel'
-import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import { Context } from '../global/Store';
+import { Link } from 'react-router-dom'
+import Button from '@material-ui/core/Button'
+import { Context } from '../global/Store'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -38,13 +38,13 @@ const useStyles = makeStyles((theme) => ({
     button: {
 
     }
-}));
+}))
 
 export default function CenteredGrid({ match }) {
-    const classes = useStyles();
+    const classes = useStyles()
 
-    const [selectedTicketId, setSelectedTicketId] = useState('');
-    const [store] = useContext(Context);
+    const [selectedTicketId, setSelectedTicketId] = useState('')
+    const [store] = useContext(Context)
     const [tickets, setTickets] = useState([])
     const [ticketsLoading, setTicketsLoading] = useState(false)
 
@@ -70,7 +70,7 @@ export default function CenteredGrid({ match }) {
      */
     const handleSelect = (event, name) => {
         if (selectedTicketId === name) {
-            setSelectedTicketId('');
+            setSelectedTicketId('')
         } else {
             setSelectedTicketId(name)
         }
@@ -108,5 +108,5 @@ export default function CenteredGrid({ match }) {
                 </Grid>
             </Grid>
         </div>
-    );
+    )
 }

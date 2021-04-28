@@ -1,5 +1,5 @@
 import User from '../models/user.model.js'
-import Project from '../models/project.model.js';
+import Project from '../models/project.model.js'
 import Ticket from '../models/ticket.model.js'
 import bcrypt from 'bcryptjs'
 
@@ -106,11 +106,11 @@ const updateUser = async (req, res) => {
             if (key === 'password') {
                 bcrypt.genSalt(12, (err, salt) => {
                     bcrypt.hash(value, salt, (err, hash) => {
-                        if (err) throw err;
-                        req.user[key] = hash;
+                        if (err) throw err
+                        req.user[key] = hash
                         req.user.save()
-                    });
-                });
+                    })
+                })
 
             } else {
                 req.user[key] = value

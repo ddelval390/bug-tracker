@@ -5,28 +5,28 @@ const Reducer = (state, action) => {
                 ...state,
                 ...action.payload,
                 isLoggedIn: true
-            };
+            }
         case 'LOGOUT':
             return {
                 ...state,
                 role: '',
                 userId: '',
                 isLoggedIn: false
-            };
+            }
         case 'OPENSNACKBAR':
             return {
                 ...state,
                 ...action.snackbarPayload,
                 snackbarIsOpen: true,
-            };
+            }
         case 'CLOSESNACKBAR':
             return {
                 ...state,
                 snackbarIsOpen: false,
             }
         default:
-            return state;
+            return state
     }
-};
+}
 
-export default Reducer;
+export default Reducer

@@ -1,7 +1,8 @@
-import express from 'express';
+import express from 'express'
 import projectCtrl from '../controllers/project.controller.js'
 
-const router = express.Router();
+
+const router = express.Router()
 
 router.route('/api/projects/')
     .post(projectCtrl.createProject)

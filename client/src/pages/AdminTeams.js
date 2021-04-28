@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import { Paper } from '@material-ui/core';
-import Table from '../components/Table';
-import Button from '@material-ui/core/Button';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import React, { useState, useEffect, useContext, Fragment } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
+import { Paper } from '@material-ui/core'
+import Table from '../components/Table'
+import Button from '@material-ui/core/Button'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 import { getProject, updateTeam } from '../apis/project-api'
-import { getAllUsers, getUserProjects } from '../apis/user-api';
-import { Context } from '../global/Store';
+import { getAllUsers, getUserProjects } from '../apis/user-api'
+import { Context } from '../global/Store'
 import HeaderLabel from '../components/HeaderLabel'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import Checkbox from '@material-ui/core/Checkbox'
+import Box from '@material-ui/core/Box'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import { Typography } from '@material-ui/core'
 import {OPENSNACKBAR, snackbarPayload} from '../helpers/constants'
 
 
@@ -42,14 +42,14 @@ const useStyles = makeStyles((theme) => ({
     button: {
 
     }
-}));
+}))
 
 const AdminTeams = () => {
-    const classes = useStyles();
+    const classes = useStyles()
 
-    const [selectedProjectId, setSelectedProjectId] = useState('');
+    const [selectedProjectId, setSelectedProjectId] = useState('')
     const [projectData, setProjectData] = useState([])
-    const [store, dispatch] = useContext(Context);
+    const [store, dispatch] = useContext(Context)
 
 
     const [team, setTeam] = useState([])
@@ -138,7 +138,7 @@ const AdminTeams = () => {
      */
     const handleSelectProject = (event, id) => {
         if (selectedProjectId === id) {
-            setSelectedProjectId('');
+            setSelectedProjectId('')
         } else {
             setSelectedProjectId(id)
         }
@@ -150,17 +150,17 @@ const AdminTeams = () => {
     * @param {object} member - Object containing values from the member selected
     */
     const handleSelectTeamMember = (member) => () => {
-        const currentIndex = tempSelected.findIndex(i => i.email === member.email);
-        const newChecked = [...tempSelected];
+        const currentIndex = tempSelected.findIndex(i => i.email === member.email)
+        const newChecked = [...tempSelected]
 
         if (currentIndex === -1) {
-            newChecked.push(member);
+            newChecked.push(member)
         } else {
-            newChecked.splice(currentIndex, 1);
+            newChecked.splice(currentIndex, 1)
         }
 
-        setTempSelected([...newChecked]);
-    };
+        setTempSelected([...newChecked])
+    }
 
     /**
      * Removes the users that are checked and triggers an api request.
@@ -259,7 +259,7 @@ const AdminTeams = () => {
                             {
                                 team.length ?
                                     team.map((member) => {
-                                        const labelId = `checkbox-list-secondary-label-${member.name}`;
+                                        const labelId = `checkbox-list-secondary-label-${member.name}`
                                         return (
                                             <ListItem
                                                 key={member.email}
@@ -272,7 +272,7 @@ const AdminTeams = () => {
                                                     checked={tempSelected.findIndex(i => i.email === member.email) !== -1}
                                                 />
                                             </ListItem>
-                                        );
+                                        )
                                     })
                                     :
                                     <ListItem>
@@ -293,7 +293,7 @@ const AdminTeams = () => {
                 </Grid>
             </Grid>
         </div>
-    );
+    )
 }
 
 export default AdminTeams

@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { Typography } from '@material-ui/core';
-import TablePagination from '@material-ui/core/TablePagination';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useState } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Paper from '@material-ui/core/Paper'
+import { Typography } from '@material-ui/core'
+import TablePagination from '@material-ui/core/TablePagination'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 
 const useStyles = makeStyles({
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     span: {
         padding: '1rem',
     }
-});
+})
 
 export default function BasicTable({ loading, selected, handleSelect, title, data, hover, dense, rowKey, tableHeight, emptyTableText }) {
 
@@ -50,13 +50,13 @@ export default function BasicTable({ loading, selected, handleSelect, title, dat
     /**
      * Styling
      */
-    const classes = useStyles();
+    const classes = useStyles()
 
     /**
      * States used to manage the pages and rows displayed on a table
      */
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [page, setPage] = useState(0)
+    const [rowsPerPage, setRowsPerPage] = useState(5)
 
     /**
      * Function to handle page changing in the table component.
@@ -65,17 +65,17 @@ export default function BasicTable({ loading, selected, handleSelect, title, dat
      */
     const handleChangePage = (event, newPage) => {
         console.log(typeof newPage)
-        setPage(newPage);
-    };
+        setPage(newPage)
+    }
 
     /**
      * Modifies the table component to handle the requested rows per page
      * @param {object} event - Capture the event object.
      */
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
+        setRowsPerPage(+event.target.value)
+        setPage(0)
+    }
 
     /**
      * Determines if the ID selected is the the ID of the current row.
@@ -186,5 +186,5 @@ export default function BasicTable({ loading, selected, handleSelect, title, dat
                 onChangeRowsPerPage={handleChangeRowsPerPage}
             />
         </Paper >
-    );
+    )
 }

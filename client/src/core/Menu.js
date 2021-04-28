@@ -1,34 +1,34 @@
-import React, { useState, useEffect, useContext } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import { logOut, cookieCheck } from '../apis/auth-api';
-import { Context } from '../global/Store';
-import { Link, Redirect, useLocation } from 'react-router-dom';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import React, { useState, useEffect, useContext } from 'react'
+import AppBar from '@material-ui/core/AppBar'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import Divider from '@material-ui/core/Divider'
+import Drawer from '@material-ui/core/Drawer'
+import Hidden from '@material-ui/core/Hidden'
+import IconButton from '@material-ui/core/IconButton'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import MenuIcon from '@material-ui/icons/Menu'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import Button from '@material-ui/core/Button'
+import { logOut, authCheck } from '../apis/auth-api'
+import { Context } from '../global/Store'
+import { Link, Redirect, useLocation } from 'react-router-dom'
+import ListSubheader from '@material-ui/core/ListSubheader'
 import SnackBar from '../components/Snackbar'
-import HomeIcon from '@material-ui/icons/Home';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import PeopleIcon from '@material-ui/icons/People';
-import {CLOSESNACKBAR, LOGIN, LOGOUT} from '../helpers/constants';
+import HomeIcon from '@material-ui/icons/Home'
+import BugReportIcon from '@material-ui/icons/BugReport'
+import AccountBoxIcon from '@material-ui/icons/AccountBox'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
+import PeopleIcon from '@material-ui/icons/People'
+import {CLOSESNACKBAR, LOGIN, LOGOUT} from '../helpers/constants'
 
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,27 +71,27 @@ const useStyles = makeStyles((theme) => ({
   landingPage: {
     flexGrow: 1,
   },
-}));
+}))
 
 const Menu = ({ window, children }) => {
 
   /**
    * Styling
    */
-  const classes = useStyles();
-  const theme = useTheme();
+  const classes = useStyles()
+  const theme = useTheme()
 
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false)
   const [redirect, setRedirect] = useState(false)
-  const [store, dispatch] = useContext(Context);
+  const [store, dispatch] = useContext(Context)
 
-  const location = useLocation();
+  const location = useLocation()
   /**
    * Handles initial check to see if the user has a cookie
    */
   useEffect(() => {
-    cookieCheck().then((res) => {
+    authCheck().then((res) => {
       const user = res.data.user
       const payload = {
         isLoggedIn: true,
@@ -129,8 +129,8 @@ const Menu = ({ window, children }) => {
    * Opens the drawer
    */
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+    setMobileOpen(!mobileOpen)
+  }
 
   /**
    * Navigation options displayed in the drawer when a user is signed in
@@ -193,9 +193,9 @@ const Menu = ({ window, children }) => {
         </React.Fragment>
       }
     </div>
-  );
+  )
 
-  const container = window !== undefined ? () => window().document.body : undefined;
+  const container = window !== undefined ? () => window().document.body : undefined
 
   return (
     /**
@@ -288,7 +288,7 @@ const Menu = ({ window, children }) => {
       </div>
     )
 
-  );
+  )
 }
 
-export default Menu;
+export default Menu

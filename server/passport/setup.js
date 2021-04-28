@@ -8,12 +8,12 @@ const LocalStrategy = passportLocal.Strategy
 
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user.id)
 })
 
 passport.deserializeUser((id, done) => {
     User.findById(id, (err, user) => {
-        done(err, user);
+        done(err, user)
     })
 })
 
@@ -27,26 +27,26 @@ passport.use(
                 .then(user => {
                     // Match password
                     bcrypt.compare(password, user.password, (err, isMatch) => {
-                        if (err) throw err;
+                        if (err) throw err
 
                         if (isMatch) {
-                            return done(null, user);
+                            return done(null, user)
                         } else {
-                            return done(null, false, { message: "Wrong password" });
+                            return done(null, false, { message: "Wrong password" })
                         }
                     })
 
                 })
                 .catch(err => {
-                    return done(null, false, { message: err });
-                });
+                    return done(null, false, { message: err })
+                })
         }
 
         if (isSignUp) {
 
             User.findOne({ email: email }).then(user => {
                 if (user) {
-                    return done(null, false, { message: "This user already exist" });
+                    return done(null, false, { message: "This user already exist" })
                 }
                 
                 let name = req.body.name
@@ -58,24 +58,24 @@ passport.use(
                 
                 bcrypt.genSalt(12, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
-                        if (err) throw err;
-                        newUser.password = hash;
+                        if (err) throw err
+                        newUser.password = hash
                         newUser.save()
                             .then(user => {
-                                return done(null, user);
+                                return done(null, user)
                             })
                             .catch(err => {
                                 console.log(err.message)
-                                return done(null, false, { message: err });
-                            });
+                                return done(null, false, { message: err })
+                            })
     
-                    });
-                });
+                    })
+                })
             })
           
         }
 
     })
-);
+)
 
-export default passport;
+export default passport

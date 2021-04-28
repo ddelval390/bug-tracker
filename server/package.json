@@ -2,9 +2,10 @@
   "type": "module",
   "name": "server",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "express.js",
   "scripts": {
-    "start": "nodemon -- exec babel-node server.js",
+    "start": "node express.js",
+    "dev": "nodemon -- exec babel-node express.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
