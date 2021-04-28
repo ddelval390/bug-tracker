@@ -1,5 +1,5 @@
 import express from 'express'
-import session from 'express-session'
+import session from 'cookie-session'
 import authRoutes from './routes/auth.routes.js'
 import userRoutes from './routes/user.routes.js'
 import projectRoutes from './routes/project.routes.js'
