@@ -4,29 +4,15 @@ import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import TextField from '@material-ui/core/TextField'
-import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import { connUser } from '../apis/auth-api'
 import { Context } from '../global/Store'
-import { Redirect, Link } from 'react-router-dom'
+import { Redirect} from 'react-router-dom'
 import {LOGIN} from '../helpers/constants'
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" to="/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -95,6 +81,28 @@ const Login = () => {
 
   }
 
+  const handleDemoUser = () => {
+    const userData = {
+      email: 'demoUser@demoMail.com',
+      password: '123456DemoUser',
+      isSignUp: false,
+    }
+    connUser(userData).then((res) => {
+      const user = res.data.user
+      const payload = {
+        isLoggedIn: true,
+        role: user.role,
+        userId: user._id,
+        isDemoUser: true,
+      }
+      dispatch({ type: LOGIN, payload: payload })
+    })
+      .catch(e => {
+        console.log(e)
+        setValues({ ...values, error: 'Incorrect email or password' })
+      })
+  }
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -150,20 +158,17 @@ const Login = () => {
           >
             Sign In
           </Button>
-          <Grid container>
-            <Grid item xs>
-            </Grid>
-            <Grid item>
-              <Link to='/signup'>
-                "Don't have an account? Sign Up"
-              </Link>
-            </Grid>
-          </Grid>
+          <Button
+            fullWidth
+            variant="contained"
+            style={{backgroundColor: '#47e344'}}
+            className={classes.submit}
+            onClick={handleDemoUser}
+          >
+            Demo
+          </Button>
         </form>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
     </Container>
   )
 }

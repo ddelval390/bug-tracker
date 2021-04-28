@@ -2,12 +2,13 @@ import React, { createContext, useReducer } from "react"
 import Reducer from './Reducer'
 import socketio from "socket.io-client"
 
-const socket = socketio.connect('http://localhost:5000')
+const socket = socketio.connect(window.location.hostname)
 
 const initialState = {
     isLoggedIn: false,
     role: null,
     userId: null,
+    isDemoUser: false,
     snackbarIsOpen: false,
     snackbarText: '',
     snackbarSeverity: '',

@@ -76,7 +76,7 @@ const DialogForm = ({ children, isOpen, handleOpen, dialogTitle, dialogDescripti
                     <Button onClick={handleOpen} variant="contained" color="secondary" fullWidth>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} variant="contained" color="primary" fullWidth>
+                    <Button onClick={handleSubmit} variant="contained" style={{backgroundColor: '#47e344'}} fullWidth>
                         Save
                     </Button>
                 </DialogActions>

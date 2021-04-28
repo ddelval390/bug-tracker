@@ -12,8 +12,8 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import { Context } from '../global/Store'
-import {snackbarPayload} from '../helpers/constants'
-import {OPENSNACKBAR} from '../helpers/constants'
+import { snackbarPayload } from '../helpers/constants'
+import { OPENSNACKBAR } from '../helpers/constants'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -53,12 +53,12 @@ const AdminRoles = () => {
     const [users, setAllUsers] = useState([])
     const [usersLoading, setUsersLoading] = useState(false)
     const [role, setRole] = useState('')
-    const [, dispatch] = useContext(Context)
+    const [store, dispatch] = useContext(Context)
 
 
-/**
- * Retrieves all users and loads them into a table
- */
+    /**
+     * Retrieves all users and loads them into a table
+     */
     useEffect(() => {
         setUsersLoading(true)
         getAllUsers()
@@ -69,11 +69,11 @@ const AdminRoles = () => {
         // eslint-disable-next-line
     }, [])
 
-/**
- * Handles the selection of a user on the table.
- * @param {object} event - Captures the event
- * @param {string} id - The ID of the user to be selected
- */
+    /**
+     * Handles the selection of a user on the table.
+     * @param {object} event - Captures the event
+     * @param {string} id - The ID of the user to be selected
+     */
     const handleSelectUser = (event, id) => {
         if (selectedUserId === id) {
             setSelectedUserId('')
@@ -93,17 +93,17 @@ const AdminRoles = () => {
         const newRole = event.target.value
         setRole(newRole)
         updateUser(selectedUserId, { role: newRole })
-        .then(res => {
-            snackbarPayload.snackbarText = 'Successfully changed user role'
-            snackbarPayload.snackbarSeverity = 'success'
-          })
-          .catch(err => {
-            snackbarPayload.snackbarText = 'Could not change users role. Try again later.'
-            snackbarPayload.snackbarSeverity = 'error'
-          })
-          .finally(() => {
-            dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
-          })
+            .then(res => {
+                snackbarPayload.snackbarText = 'Successfully changed user role'
+                snackbarPayload.snackbarSeverity = 'success'
+            })
+            .catch(err => {
+                snackbarPayload.snackbarText = 'Could not change users role. Try again later.'
+                snackbarPayload.snackbarSeverity = 'error'
+            })
+            .finally(() => {
+                dispatch({ type: OPENSNACKBAR, snackbarPayload: snackbarPayload })
+            })
     }
 
     return (
@@ -112,6 +112,15 @@ const AdminRoles = () => {
                 <Grid item xs={12}>
                     <HeaderLabel text='Manage User Roles' />
                 </Grid>
+                {
+                    store.isDemoUser &&
+                    <Grid item xs={12}>
+                        <Typography variant='h5'>
+                            Demo users are able to view roles but not change them.
+                    </Typography>
+                    </Grid>
+                }
+
 
                 <Grid item md={8} xs={12}>
                     <Table
@@ -138,7 +147,7 @@ const AdminRoles = () => {
                         <FormControl className={classes.formControl} style={{ width: "80%" }}>
                             <InputLabel id="demo-simple-select-label">Role</InputLabel>
                             <Select
-                                disabled={selectedUserId === ''}
+                                disabled={(selectedUserId === '') || (store.isDemoUser)}
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 value={role}

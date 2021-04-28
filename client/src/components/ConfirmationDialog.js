@@ -20,7 +20,7 @@ const ConfirmationDialog = ({open, handleOpen, handleConfirm, titleText, descrip
           <Button variant='contained' color='secondary'onClick={handleOpen}>
             Cancel
           </Button>
-          <Button variant='contained' color='primary' onClick={() => {handleConfirm(); handleOpen()}}>
+          <Button variant='contained' style={{backgroundColor: '#47e344'}} onClick={() => {handleConfirm(); handleOpen()}}>
             Confirm
           </Button>
         </DialogActions>

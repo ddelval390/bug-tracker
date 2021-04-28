@@ -138,6 +138,10 @@ const Menu = ({ window, children }) => {
   const drawerNavOptions = [['Home', '', HomeIcon], ['My tickets', 'tickets', BugReportIcon], ['My Profile', `profile/${store.userId}`, AccountBoxIcon]]
   const adminNavOptions = [['Manage User Roles', 'admin/user-roles', AssignmentIndIcon], ['Manage Project Teams', 'admin/teams', PeopleIcon]]
 
+  if(store.isDemoUser) {
+    drawerNavOptions.pop()
+  }
+
   const drawer = (
     <div>
       <div className={classes.toolbar} />
