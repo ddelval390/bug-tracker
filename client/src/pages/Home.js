@@ -15,7 +15,7 @@ import HeaderLabel from '../components/HeaderLabel'
 import ConfirmationDialog from '../components/ConfirmationDialog'
 import { snackbarPayload, OPENSNACKBAR } from '../helpers/constants'
 import axios from 'axios'
-
+import { Typography } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -364,6 +364,14 @@ const Home = () => {
                 <Grid item xs={12}>
                     <HeaderLabel text='Home' />
                 </Grid>
+                {
+                    store.isDemoUser &&
+                    <Grid item xs={12}>
+                        <Typography variant='h5'>
+                            Demo users are able to view roles but not change them.
+                    </Typography>
+                    </Grid>
+                }
 
                 {
                     store.role === 'Admin' &&

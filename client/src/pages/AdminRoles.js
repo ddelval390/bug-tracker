@@ -102,6 +102,8 @@ const AdminRoles = () => {
             .then(res => {
                 snackbarPayload.snackbarText = 'Successfully changed user role'
                 snackbarPayload.snackbarSeverity = 'success'
+                const user = users.find(user => user._id === selectedUserId)
+                user.role = newRole
             })
             .catch(err => {
                 snackbarPayload.snackbarText = 'Could not change users role. Try again later.'

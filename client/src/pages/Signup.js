@@ -67,7 +67,7 @@ const Signup = () => {
         isSignUp: true,
       }
       connUser(userData).then(() => {
-        dispatch({ type: LOGIN, payload: true })
+        
       })
         .catch(e => {
           setValues({ ...values, error: 'This email is already in use please login' })

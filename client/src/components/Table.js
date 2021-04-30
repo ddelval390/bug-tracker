@@ -56,7 +56,7 @@ export default function BasicTable({ loading, selected, handleSelect, title, dat
      * States used to manage the pages and rows displayed on a table
      */
     const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
 
     /**
      * Function to handle page changing in the table component.
