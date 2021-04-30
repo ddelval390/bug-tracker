@@ -111,9 +111,9 @@ const TicketDetails = ({ match }) => {
         })
       })
 
-      return () => {
-        source.cancel()
-      }
+    return () => {
+      source.cancel()
+    }
     // eslint-disable-next-line
   }, [])
 
@@ -422,6 +422,7 @@ const TicketDetails = ({ match }) => {
 
         <Grid item xs={12}>
           <Table
+            emptyTableText={'This ticket has not been changed.'}
             tableHeight='22vh'
             loading={isLoading.history}
             title='Ticket History'
@@ -488,7 +489,7 @@ const TicketDetails = ({ match }) => {
             id="combo-box-demo"
             options={devList}
             value={devSelection.current}
-            onChange={(e, newValue) => { devSelection.current = newValue}}
+            onChange={(e, newValue) => { devSelection.current = newValue }}
             getOptionLabel={(option) => option.name}
             renderInput={(params) => <TextField {...params} label="Assign a developer" variant="outlined" />}
           />
