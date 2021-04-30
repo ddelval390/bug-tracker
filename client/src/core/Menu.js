@@ -135,7 +135,8 @@ const Menu = ({ window, children }) => {
   /**
    * Navigation options displayed in the drawer when a user is signed in
    */
-  const drawerNavOptions = [['Home', '', HomeIcon], ['My tickets', 'tickets', BugReportIcon], ['My Profile', `profile/${store.userId}`, AccountBoxIcon]]
+  //  const drawerNavOptions = [['Home', '', HomeIcon], ['My tickets', 'tickets', BugReportIcon], ['My Profile', `profile/${store.userId}`, AccountBoxIcon]]
+  const drawerNavOptions = [['Home', '', HomeIcon], ['My tickets', 'tickets', BugReportIcon]]
   const adminNavOptions = [['Manage User Roles', 'admin/user-roles', AssignmentIndIcon], ['Manage Project Teams', 'admin/teams', PeopleIcon]]
 
   if(store.isDemoUser) {
