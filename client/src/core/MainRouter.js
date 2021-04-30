@@ -22,9 +22,9 @@ const MainRouter = () => {
                 <Switch>
                     <Route exact path='/' component={LandingPage} />
                     <Route exact path='/login' component={Login} />
-                    <Route exact path='/signup' component={SignUp} />
+                    {/* <Route exact path='/signup' component={SignUp} /> */}
                     <PrivateRoute exact path='/dashboard/tickets/' component={UserTickets} />
-                    <PrivateRoute exact path='/dashboard/profile/:userId' component={Profile} />
+                    {/* <PrivateRoute exact path='/dashboard/profile/:userId' component={Profile} /> */}
                     <PrivateRoute exact path='/dashboard' component={Home} />
                     <PrivateRoute exact path='/dashboard/projects/ticket/:ticketId' component={TicketDetails} />
                     <PrivateRoute exact path='/dashboard/admin/teams' component={AdminTeams} />
