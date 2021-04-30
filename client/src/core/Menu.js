@@ -121,7 +121,7 @@ const Menu = ({ window, children }) => {
     !store.isLoggedIn &&
     <React.Fragment>
       <Link to='/login' className={classes.link}><Button color="inherit">Log In</Button></Link>
-      <Link to='/signup' className={classes.link}><Button color="inherit">Sign Up</Button></Link>
+      {/* <Link to='/signup' className={classes.link}><Button color="inherit">Sign Up</Button></Link> */}
     </React.Fragment>
   )
 
