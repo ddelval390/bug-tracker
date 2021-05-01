@@ -76,6 +76,12 @@ const returnProject = async (req, res) => {
 
 const createTicket = async (req, res) => {
     try {
+        if(req.body.priority === ''){
+            req.body.priority = 'none'
+        }
+        if(req.body.type === ''){
+            req.body.type = 'bug'
+        }
         const ticket = new Ticket(req.body)
         await ticket.save()
         await req.project.tickets.push(ticket)
