@@ -91,7 +91,7 @@ const TicketDetails = ({ match }) => {
         const submitterFullName = res.data.ticket.submitter.name
         const devFullName = res.data.ticket.assignedDev ? res.data.ticket.assignedDev.name : ''
         devSelection.current = res.data.ticket.assignedDev
-        const localDate = new Date(res.data.ticket.submissionDate)
+        const submissionDateToLocal = new Date(res.data.ticket.submissionDate)
         setComments(res.data.ticket.comments)
         setHistory(res.data.ticket.history)
         setDetails({
@@ -102,7 +102,7 @@ const TicketDetails = ({ match }) => {
           priority: res.data.ticket.priority,
           type: res.data.ticket.type,
           submitter: submitterFullName,
-          'submission date': localDate.toLocaleDateString() + ' ' + localDate.toLocaleTimeString(),
+          'submission date': submissionDateToLocal.toLocaleDateString() + ' ' + submissionDateToLocal.toLocaleTimeString(),
         })
         setLoading({
           comments: false,
@@ -154,6 +154,7 @@ const TicketDetails = ({ match }) => {
       setComments(prevComments => { prevComments.unshift(comment); return [...prevComments] })
     })
     socket.on('ticketUpdate', ticket => {
+      const submissionDateToLocal = new Date(ticket.submissionDate)
       setHistory(ticket.history)
       setDetails({
         title: ticket.title,
@@ -163,7 +164,7 @@ const TicketDetails = ({ match }) => {
         priority: ticket.priority,
         type: ticket.type,
         submitter: ticket.submitter.name,
-        'submission date': ticket.submissionDate,
+        'submission date': submissionDateToLocal.toLocaleDateString() + ' ' + submissionDateToLocal.toLocaleTimeString(),
       })
     })
     return () => {
@@ -363,7 +364,10 @@ const TicketDetails = ({ match }) => {
 
               {
                 (!isLoading.comments && comments.length) ?
-                  comments.map((comment) => (
+                  comments.map((comment) => {
+                    const timePostedToLocalDate = new Date(comment.timePosted)
+
+                    return (
                     <Fragment key={comment._id}>
                       <ListItem alignItems="flex-start">
                         <ListItemText
@@ -378,7 +382,7 @@ const TicketDetails = ({ match }) => {
                               >
                                 {comment.text}
                               </Typography>
-                            Posted at: {comment.timePosted}
+                            Posted at: {timePostedToLocalDate.toLocaleDateString() + ' ' + timePostedToLocalDate.toLocaleTimeString()}
                             </React.Fragment>
                           }
                         />
@@ -392,7 +396,7 @@ const TicketDetails = ({ match }) => {
                       </ListItem>
                       <Divider variant="inset" component="li" />
                     </Fragment>
-                  ))
+                  )})
                   :
                   <ListItem style={{ width: '60%', margin: 'auto' }}>
                     <Typography variant='h4'>
