@@ -368,7 +368,7 @@ const Home = () => {
                     store.isDemoUser &&
                     <Grid item xs={12}>
                         <Typography variant='h5'>
-                            Demo users are able to view roles but not change them.
+                            Demo users are able to view and create projects but delete them.
                     </Typography>
                     </Grid>
                 }
