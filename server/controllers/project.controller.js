@@ -14,7 +14,7 @@ const createProject = async (req, res) => {
         const filteredProject = {
             _id: project._id,
             title: project.title,
-            project: project.description,
+            description: project.description,
         }
 
         return res.status(200).json({
