@@ -1,5 +1,6 @@
 import Project from '../models/project.model.js'
 import Ticket from '../models/ticket.model.js'
+import User from '../models/user.model.js'
 import Comment from '../models/comment.model.js'
 import io from '../socket.js'
 
@@ -47,7 +48,7 @@ const findProject = async (req, res, next) => {
         req.project = await Project.findOne({ _id: req.params.projectId }).exec()
         await req.project
             .populate('team', 'name email')
-            .populate('tickets', {_id:1, title:1, description:1, status:1, type:1, priority:1})
+            .populate('tickets', { _id: 1, title: 1, description: 1, status: 1, type: 1, priority: 1 })
             .execPopulate()
         next()
     } catch (err) {
@@ -80,7 +81,7 @@ const createTicket = async (req, res) => {
         await req.project.tickets.push(ticket)
         await req.project.save()
 
-        const filteredTicket ={
+        const filteredTicket = {
             _id: ticket._id,
             status: ticket.status,
             priority: ticket.priority,
@@ -171,18 +172,46 @@ const returnTicket = async (req, res) => {
 const updateTicket = async (req, res) => {
     try {
         const date = Date.now()
-        Object.entries(req.body).map(([key, value]) => {
-            if (req.ticket[key] !== value) {
+        await Object.entries(req.body).map(([key, newValue]) => {
+            if (req.ticket[key] !== newValue) {
+                const oldValue = req.ticket[key]
                 const history = {
                     property: key,
-                    oldValue: req.ticket[key],
-                    newValue: value,
                     dateChanged: date,
+                    newValue: newValue,
+                    oldValue: oldValue
                 }
-                req.ticket.history.push({ ...history })
+
+                if (key === 'assignedDev') {
+                    User.findOne({ _id: newValue }, 'name')
+                        .then(user => {
+                            history.newValue = user.name
+                        })
+                        .then(() => {
+                            if (!oldValue) {
+                                history.oldValue = 'None'
+                            } else {
+                                return User.findOne({ _id: oldValue }, 'name')
+                            }
+                        })
+                        .then((user) => {
+                            if (user) {
+                                console.log('this is user', user)
+                                history.oldValue = user.name
+                            }
+                        })
+                        .finally(() => {
+                            console.log('this is ', history)
+                            req.ticket.history.push({ ...history })
+                        })
+                } else {
+                    req.ticket.history.push({ ...history })
+                }
+
+                req.ticket[key] = newValue
             }
-            req.ticket[key] = value
         })
+
         await req.ticket
             .populate('submitter')
             .populate('comments')
@@ -190,7 +219,9 @@ const updateTicket = async (req, res) => {
             .populate('assignedDev')
             .execPopulate()
         io.getIO().to(req.params.ticketId).emit('ticketUpdate', req.ticket)
+
         await req.ticket.save()
+
         return res.status(200).json({
             message: "Successfully updated the ticket",
         })
@@ -227,7 +258,7 @@ const postComment = async (req, res) => {
             .populate({ path: 'comments', populate: { path: 'user', model: 'User', select: { _id: 1, name: 1 } } },)
             .populate('assignedDev')
             .execPopulate()
-        const postedComment  = req.ticket.comments.shift()
+        const postedComment = req.ticket.comments.shift()
         io.getIO().to(req.params.ticketId).emit('newComment', postedComment)
         return res.status(200).json({
             message: "Successfully posted comment"
