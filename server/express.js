@@ -3,6 +3,7 @@ import session from 'cookie-session'
 import authRoutes from './routes/auth.routes.js'
 import userRoutes from './routes/user.routes.js'
 import projectRoutes from './routes/project.routes.js'
+import ticketRoutes from './routes/ticket.routes.js'
 import passport from './passport/setup.js'
 import helmet from 'helmet'
 import cors from 'cors'
@@ -42,6 +43,7 @@ app.use(passport.session())
 
 // Routes
 app.use('/', projectRoutes)
+app.use('/', ticketRoutes)
 app.use('/', userRoutes)
 app.use('/', authRoutes)
 

@@ -13,13 +13,13 @@ router.route('/api/users/user/:userId')
     .get(userCtrl.returnUser)
     .patch(userCtrl.updateUser)
 
-router.route('/api/users/:role')
+router.route('/api/users/role/:role')
     .get(userCtrl.getUsersByRole)
 
-router.route('/api/users/:userId/projects')
+router.route('/api/users/user/:userId/projects')
     .get(userCtrl.getUserProjects)
 
-router.route('/api/users/:userId/tickets')
+router.route('/api/users/user/:userId/tickets')
     .get(userCtrl.getUserTickets)
 
 

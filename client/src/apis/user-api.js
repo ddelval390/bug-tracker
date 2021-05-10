@@ -6,7 +6,7 @@ import axios from 'axios'
  * @returns Server response containing a list of users filtered by role.
  */
 const getUsersByRole = async (role) => {
-    const response = await axios.get(`/api/users/${role}`)
+    const response = await axios.get(`/api/users/role/${role}`)
         .then(res => {
             return res
         })
@@ -25,7 +25,7 @@ const getUsersByRole = async (role) => {
  * @returns Server response containing list of projects where the user is in the team, the assigned dev, or submitter.
  */
 const getUserProjects = async (userId, cancelToken) => {
-    const response = await axios.get(`/api/users/${userId}/projects`,{cancelToken: cancelToken})
+    const response = await axios.get(`/api/users/user/${userId}/projects`,{cancelToken: cancelToken})
         .then(res => {
             return res
         })
@@ -44,7 +44,7 @@ const getUserProjects = async (userId, cancelToken) => {
  * @returns Server response containing an array of the users tickets.
  */
 const getUserTickets = async (userId, cancelToken) => {
-    const response = await axios.get(`/api/users/${userId}/tickets`, cancelToken)
+    const response = await axios.get(`/api/users/user/${userId}/tickets`, cancelToken)
         .then(res => {
             return res
         })
