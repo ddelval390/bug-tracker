@@ -1,5 +1,6 @@
 import express from 'express'
 import projectCtrl from '../controllers/project.controller.js'
+import ticketCtrl from '../controllers/ticket.controller.js'
 
 
 const router = express.Router()
@@ -15,7 +16,7 @@ router.route('/api/project/:projectId/team')
     .post(projectCtrl.updateTeam)
 
 router.route('/api/project/:projectId/tickets')
-    .post(projectCtrl.createTicket)
+    .post(ticketCtrl.createTicket)
 
 
 router.param('projectId', projectCtrl.findProject)
