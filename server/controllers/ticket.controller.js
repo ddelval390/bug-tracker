@@ -1,4 +1,5 @@
 import Ticket from '../models/ticket.model.js'
+import User from '../models/user.model.js'
 import io from '../socket.js'
 
 const createTicket = async (req, res) => {
@@ -83,7 +84,7 @@ const returnTicket = async (req, res) => {
     }
 }
 
-const updateAssignedDev = (newUserId, oldUserId, req) => {
+const updateAssignedDev = (newUserId, oldUserId, history, req) => {
     User.findOne({ _id: newUserId }, 'name')
         .then(user => {
             history.newValue = user.name
@@ -96,7 +97,7 @@ const updateAssignedDev = (newUserId, oldUserId, req) => {
             }
         })
         .then((user) => {
-            if (user) {
+            if (user !== undefined) {
                 history.oldValue = user.name
             }
         })
@@ -119,7 +120,7 @@ const updateTicket = async (req, res) => {
                 }
 
                 if (key === 'assignedDev') {
-                    updateAssignedDev(newValue, oldValue, req)
+                    updateAssignedDev(newValue, oldValue, history, req)
                 } else {
                     req.ticket.history.push({ ...history })
                 }
