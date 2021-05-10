@@ -6,12 +6,12 @@ import PrivateRoute from '../components/PrivateRoute'
 
 const LandingPage = lazy(() => import('../pages/LandingPage'))
 const Login = lazy(() => import('../pages/Login'))
-const SignUp = lazy(() => import('../pages/Signup'))
+// const SignUp = lazy(() => import('../pages/Signup'))
 const Home = lazy(() => import('../pages/Home'))
 const TicketDetails = lazy(() => import('../pages/TicketDetails'))
 const AdminTeams = lazy(() => import('../pages/AdminTeams'))
 const AdminRoles = lazy(() => import('../pages/AdminRoles'))
-const Profile = lazy(() => import('../pages/Profile'))
+// const Profile = lazy(() => import('../pages/Profile'))
 const UserTickets = lazy(() => import('../pages/UserTickets'))
 const NotFound = lazy(() => import('../pages/NotFound'))
 
