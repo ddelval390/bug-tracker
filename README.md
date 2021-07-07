@@ -27,7 +27,8 @@ In the root folder, run the following command ```$ npm run dev ```
 
 ## Authors
 
-Main Author: David Del Val 
+Main Author: David Del Val
+
 Github: [ddelval390](https://github.com/ddelval390)
 
 ## License
