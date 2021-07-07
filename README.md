@@ -11,6 +11,7 @@ Simple system for tracking tickets between projects and teams.
 * Node 14.16.0
 * Concurrently ^6.0.0
 * Nodemon ^2.0.9
+* Npm 6.14.11
 
 ### Installing
 
